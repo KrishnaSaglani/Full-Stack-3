@@ -1,0 +1,191 @@
+/* =========================
+   Basic Reset
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    padding: 55px 20px;
+    color: #e8edf7;
+
+    background:
+        radial-gradient(circle at 15% 20%, rgba(53, 88, 140, 0.2), transparent 32%),
+        radial-gradient(circle at 85% 80%, rgba(55, 70, 115, 0.16), transparent 35%),
+        linear-gradient(135deg, #070b14, #0c1425, #080d18);
+}
+
+/* Subtle background glow */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.2;
+    z-index: -1;
+    animation: floatGlow 10s ease-in-out infinite alternate;
+}
+
+body::before {
+    background: #274c77;
+    top: -150px;
+    left: -130px;
+}
+
+body::after {
+    background: #3a506b;
+    bottom: -150px;
+    right: -130px;
+    animation-delay: 3s;
+}
+
+@keyframes floatGlow {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(45px, 35px);
+    }
+}
+
+/* =========================
+   Page Title
+========================= */
+.title {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto 28px;
+
+    color: #f1f5f9;
+    font-size: 2rem;
+    letter-spacing: 0.5px;
+    text-align: center;
+
+    animation: appear 0.5s ease-out;
+}
+
+/* =========================
+   Chatroom List Card
+========================= */
+.centre_container {
+    width: 100%;
+    max-width: 850px;
+    min-height: 250px;
+    margin: 0 auto;
+    padding: 22px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(16px);
+
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 18px;
+
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.45),
+        0 0 30px rgba(30, 58, 95, 0.16);
+
+    animation: appear 0.6s ease-out;
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================
+   Chatroom Buttons
+========================= */
+.chatroom_button {
+    width: 100%;
+    padding: 15px 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    color: #dbeafe;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: left;
+
+    cursor: pointer;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 11px;
+
+    background: rgba(255, 255, 255, 0.045);
+    transition: 0.22s ease;
+}
+
+.chatroom_button::after {
+    content: "Join  →";
+    color: rgba(147, 197, 253, 0.75);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.chatroom_button:hover {
+    transform: translateX(5px);
+    color: #ffffff;
+
+    background: rgba(59, 130, 246, 0.14);
+    border-color: rgba(96, 165, 250, 0.45);
+
+    box-shadow: 0 5px 16px rgba(30, 64, 175, 0.15);
+}
+
+.chatroom_button:hover::after {
+    color: #bfdbfe;
+}
+
+/* =========================
+   Optional Empty State
+========================= */
+.centre_container:empty::before {
+    content: "No public chatrooms are available yet.";
+    display: block;
+    padding: 55px 20px;
+
+    color: rgba(203, 213, 225, 0.45);
+    text-align: center;
+    font-size: 0.98rem;
+}
+
+/* =========================
+   Mobile
+========================= */
+@media (max-width: 600px) {
+    body {
+        padding: 35px 15px;
+    }
+
+    .title {
+        font-size: 1.6rem;
+    }
+
+    .centre_container {
+        padding: 15px;
+    }
+
+    .chatroom_button {
+        padding: 14px;
+    }
+}

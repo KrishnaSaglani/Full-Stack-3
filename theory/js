@@ -14,4 +14,8 @@
     // for received messages
 
 
+2. console.log(`entered room ${room}`);
+
+    use backticks `` and not quotes "" to do this
+
     

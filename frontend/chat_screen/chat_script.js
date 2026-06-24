@@ -1,6 +1,12 @@
 
 
 
+//open theme room 
+function opentheme(themeName){
+    window.location.href = "buffer.html";
+}
+
+
 // themes
 themes = ["Random", "college", "chill", "a", "b", "c"];
 async function add_themes(){
@@ -57,5 +63,15 @@ typingBox.addEventListener("keydown", function (event) {
     }
 });
 
+
+//browse chatrooms button
+function browse_chatroom_page(){
+    window.location.href = "../browse_screen/browse.html";
+}
+
+//create chatroom button
+function create_chatroom_page(){
+    window.location.href = "../create_room_screen/create_room.html";
+}
 
 

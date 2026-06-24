@@ -1,4 +1,9 @@
-1. Design chat.html
-2. create a schema for the tables
-3. make relevant javascript
-4. make backend linkage
+1. Add description to browse screen
+2. Create create_chatroom screen
+3. Start pipelining work in create_chatroom screen.
+Its basically going to involve:
+    query to create table of chatrooms if not exists.
+    query to add a chatroom with id, publisher and timestamp 
+    then ACK is received and we can redirect to window.location.href ="browse"
+
+    Thats it for today
