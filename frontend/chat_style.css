@@ -1,0 +1,359 @@
+/* =========================
+   Basic Reset
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    overflow: hidden;
+    color: #e8edf7;
+
+    background:
+        radial-gradient(circle at 15% 20%, rgba(53, 88, 140, 0.18), transparent 30%),
+        radial-gradient(circle at 85% 80%, rgba(55, 70, 115, 0.14), transparent 35%),
+        linear-gradient(135deg, #070b14, #0c1425, #080d18);
+}
+
+/* =========================
+   Header
+========================= */
+.hello_msg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 72px;
+    display: flex;
+    align-items: center;
+
+    padding-left: 28px;
+    z-index: 10;
+
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    color: #f1f5f9;
+
+    background: rgba(10, 17, 34, 0.88);
+    backdrop-filter: blur(16px);
+
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.22);
+}
+
+/* =========================
+   Left Sidebar: Themes
+========================= */
+.container_left {
+    position: fixed;
+    top: 72px;
+    left: 0;
+    bottom: 142px;
+
+
+    width: 280px;
+    padding: 20px 14px;
+    overflow-y: auto;
+
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(16px);
+
+    border-right: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+/* Scrollbar styling */
+.container_left::-webkit-scrollbar {
+    width: 7px;
+}
+
+.container_left::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.3);
+    border-radius: 10px;
+}
+
+/* Theme buttons added by JavaScript */
+.container_left button {
+    width: 100%;
+    padding: 13px 14px;
+    margin-bottom: 10px;
+
+    text-align: left;
+    color: #dbeafe;
+    font-size: 0.95rem;
+    font-weight: 500;
+
+    cursor: pointer;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.045);
+    transition: 0.22s ease;
+}
+
+.container_left button:hover {
+    transform: translateX(4px);
+    color: #ffffff;
+
+    background: rgba(59, 130, 246, 0.14);
+    border-color: rgba(96, 165, 250, 0.4);
+}
+
+/* Optional class you can add with JavaScript to selected theme */
+.container_left button.active-theme {
+    color: #ffffff;
+    background: rgba(37, 99, 235, 0.3);
+    border-color: rgba(96, 165, 250, 0.65);
+    box-shadow: 0 0 15px rgba(37, 99, 235, 0.15);
+}
+
+/* =========================
+   Bottom Left: Create Chatroom
+========================= */
+/* =========================
+   Bottom Left: Chatroom Buttons
+========================= */
+.container_left_bottom {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+
+    width: 280px;
+    min-height: 142px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 12px 14px;
+
+    background: rgba(10, 17, 34, 0.9);
+    backdrop-filter: blur(16px);
+
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
+    border-right: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+/* Both buttons */
+.create_chatroom,
+.browse_chatroom {
+    width: 100%;
+    padding: 12px;
+
+    border: none;
+    border-radius: 9px;
+
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: 0.22s ease;
+}
+
+/* Browse button: purple */
+.browse_chatroom {
+    background: linear-gradient(135deg, #7c3aed, #4c1d95);
+    box-shadow: 0 5px 14px rgba(124, 58, 237, 0.24);
+}
+
+.browse_chatroom:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #8b5cf6, #5b21b6);
+    box-shadow: 0 8px 18px rgba(139, 92, 246, 0.3);
+}
+
+/* Create button: blue */
+.create_chatroom {
+    background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+    box-shadow: 0 5px 14px rgba(30, 64, 175, 0.25);
+}
+
+.create_chatroom:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.3);
+}
+
+/* Click effect */
+.create_chatroom:active,
+.browse_chatroom:active {
+    transform: scale(0.98);
+}
+/* =========================
+   Right Side: Chat Area
+========================= */
+.container_right {
+    position: fixed;
+    top: 72px;
+    left: 280px;
+    right: 0;
+    bottom: 0;
+
+    padding: 28px;
+    padding-bottom: 100px;
+    scroll-behavior: smooth;
+    overflow-y: auto;
+
+    background: rgba(8, 13, 24, 0.25);
+}
+
+/* Placeholder message when no chat is open */
+.container_right::before {
+    content: "Select a theme or create a chatroom to begin";
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    color: rgba(203, 213, 225, 0.35);
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+/* =========================
+   Typing Box
+========================= */
+.typing_box {
+    position: fixed;
+    left: 310px;
+    right: 130px; /* Leaves space for Send button */
+    bottom: 22px;
+
+    min-height: 52px;
+    max-height: 140px;
+    padding: 14px 16px;
+
+    resize: none;
+    overflow-y: auto;
+
+    color: #e2e8f0;
+    font-size: 1rem;
+    line-height: 1.4;
+
+    outline: none;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(16px);
+
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    transition: 0.25s ease;
+}
+
+.typing_box::placeholder {
+    color: rgba(203, 213, 225, 0.45);
+}
+
+.typing_box:focus {
+    border-color: rgba(96, 165, 250, 0.7);
+    background: rgba(15, 23, 42, 0.96);
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.1),
+        0 8px 24px rgba(0, 0, 0, 0.3);
+}
+/* =========================
+   Example Chat Message Styles
+   Use these later from JavaScript
+========================= */
+.message {
+    max-width: 70%;
+    width: fit-content;
+    padding: 11px 14px;
+    margin-bottom: 12px;
+
+    border-radius: 12px;
+    line-height: 1.4;
+    font-size: 0.95rem;
+}
+
+.message.received {
+    margin-right: auto;
+    color: #dbeafe;
+
+    background: rgba(71, 85, 105, 0.32);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+
+    border-bottom-left-radius: 3px;
+}
+
+.message.sent {
+    margin-left: auto;
+    color: #ffffff;
+
+    background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
+
+    border-bottom-right-radius: 3px;
+}
+
+/* =========================
+   Mobile Layout
+========================= */
+@media (max-width: 700px) {
+    .container_left {
+        width: 220px;
+    }
+
+    .container_left_bottom {
+        width: 220px;
+    }
+
+    .container_right {
+        left: 220px;
+        padding: 20px;
+    }
+
+    .typing_box {
+        left: 240px;
+        right: 18px;
+        bottom: 16px;
+    }
+
+    .hello_msg {
+        font-size: 1.15rem;
+        padding-left: 18px;
+    }
+}
+
+
+/* =========================
+   Send Button
+========================= */
+.send {
+    position: fixed;
+    right: 42px;
+    bottom: 29px;
+
+    padding: 10px 18px;
+
+    border: none;
+    border-radius: 9px;
+
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.28);
+
+    transition: 0.22s ease;
+}
+
+.send:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    box-shadow: 0 7px 16px rgba(37, 99, 235, 0.35);
+}
+
+.send:active {
+    transform: scale(0.96);
+}

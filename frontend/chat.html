@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>KSChat</title>
+    <link rel="stylesheet" href="chat_style.css">
+    <script src = "chat_script.js" defer></script>
+</head>
+
+<body>
+    <h1 class = "hello_msg" id = "hello_msg">Hello, </h1>
+    <script>
+        const user = localStorage.getItem('storedUser');
+        if (user) {
+                document.getElementById('hello_msg').innerText += `${user}`;
+            } else {
+                // If someone tries to visit buffer.html without logging in, kick them out!
+                alert("Unauthorized! Please login first.");
+                window.location.href = 'login.html';
+            }
+    </script>
+
+    <div class="container_left" id="menu">
+    </div>
+
+    <div class="container_left_bottom" id="create_chatroom">
+
+        <button class="browse_chatroom" onclick="browse_chatroom_page()">
+            Browse Chatrooms
+        </button>
+
+        
+        <button class="create_chatroom" onclick="create_chatroom_page()">
+            Create Chatrooms
+        </button>
+
+        
+    </div>
+
+    <div class = "container_right" id = "chats">
+        <textarea type= "text" placeholder="type here..." class="typing_box" rows="1"></textarea>
+        
+        <button id="sendButton" class="send" onclick="send_chat()">Send</button>
+
+    </div>
+
+
+</body>
+</html>
+

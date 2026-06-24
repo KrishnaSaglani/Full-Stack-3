@@ -1,0 +1,56 @@
+1. You can add <script></script> anywhere inside the body, even inside other divisions
+2. its best to add <style></style> at the start only
+
+3. querySelector/getElementById
+
+    for id → document.getElementById("idName")
+            -> document.querySelector("#idName")
+    for class → document.querySelector(".className")
+    for complex selection → document.querySelector(...)
+
+    x= const x = document.querySelector(".dede");
+    then we can do:
+            x.innerText = "New text";
+            x.innerHTML = "<b>Bold text</b>";
+            console.log(x.innerText);
+
+            x.style.color = "red";
+            x.style.backgroundColor = "black";
+            x.style.padding = "20px";
+            x.style.display = "none";
+
+            //adding or removing classes!
+            x.classList.add("active");
+            x.classList.remove("active");
+            x.classList.toggle("active");
+
+            //listen for keyboard clicks:
+            x.addEventListener("keydown", function (event) {
+                console.log(event.key);
+                if (event.key == "Enter"){....}
+            });
+
+            //if user is inputting something, we can get/change that value
+            console.log(x.value);
+
+            x.value = "Hello Krishna";
+            x.value = "";
+
+            //Create and add new elements inside it ****
+
+            const chatArea = document.querySelector(".container_right");
+
+            const message = document.createElement("div");
+            message.classList.add("message", "sent");
+            //means class of message mecomes .message.sent
+            message.innerText = "Hello!";
+
+            chatArea.appendChild(message);
+
+            //focusing on the text:
+            x.focus()
+
+            //errors:
+            if x=NULL there can be an error when we do x.innerText
+
+    Note: we can do all the EXACT same things even using getElementById!!!
