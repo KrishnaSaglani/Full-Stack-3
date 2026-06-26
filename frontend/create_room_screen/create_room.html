@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Create Public Chatroom</title>
+    <link rel="stylesheet" href="create_style.css">
+    <script src="create.js" defer></script>
+</head>
+
+<body>
+    <div id="display">
+        <button class="back" onclick="go_back()">Go Back</button>
+        <h1 id ="title" style="font-weight: 300;">Create Public Chatroom</h1>
+        <input id="name" placeholder="Enter Room Name..." required>
+        <input id="description" placeholder="Enter Room Description..." required>
+        <input id="max_members" placeholder="Enter Max Allowed Members..." required>
+
+        <select id="active_for" required>
+            <option value="" disabled selected>Active for...</option>
+            <option value="1">1 Day</option>
+            <option value="2">2 Days</option>
+            <option value="4">4 Days</option>
+            <option value="7">7 Days</option>
+        </select>
+
+        <input id="rule" placeholder="Enter the Special Rule for this room(optional)...">
+        <button class="create" onclick="create_room()">Create</button>
+
+    </div>
+    
+
+</body>
+
+</html>

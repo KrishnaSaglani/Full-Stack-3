@@ -1,14 +1,21 @@
 
 
 async function enter_room(room){
-    console.log(`entered room ${room}`);
+    console.log(`entered room ${room.name}`);
 
 }
 
 
 
 
-const sample_rooms = ["a","b","c","d"]
+const sample_rooms = 
+[
+    {id:"a",name:"room a", description:"description a"},
+    {id:"b",name:"room b", description:"description b"},
+    {id:"c",name:"room c", description:"description c"},
+    {id:"d",name:"room d", description:"description d"}
+]
+
 async function addChatrooms(){
     buttonArea = document.querySelector(".centre_container");
 
@@ -16,7 +23,22 @@ async function addChatrooms(){
 
         // creating a button element
         const button = document.createElement("button");
-        button.innerText = room;
+        
+        // creating the inside of each button:
+        const id = document.createElement("h2");
+        id.innerText = room.id;
+
+        const title = document.createElement("h3");
+        title.innerText= room.name;
+
+        const description = document.createElement("p");
+        description.innerText= room.description;
+
+        //adding all to button:
+        button.appendChild(id);
+        button.appendChild(title);
+        button.appendChild(description);
+
 
         // giving it semantics
         button.addEventListener("click", function(){enter_room(room)});
@@ -29,5 +51,9 @@ async function addChatrooms(){
 
     }
 }
-
 addChatrooms()
+
+
+async function go_back() {
+    window.location.href ="../chat_screen/chat.html";
+}

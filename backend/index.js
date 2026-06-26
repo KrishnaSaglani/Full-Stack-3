@@ -41,6 +41,7 @@ app.post('/login', async function (req, res) {
             .input('pwd', sql.NVarChar, pwd)
             .query("SELECT * FROM users WHERE UserName = @user AND UserPass = @pwd");
 
+        // Anyone can bypass your frontend and call your API directly. So double check!
         if (result.recordset.length > 0) {
             res.json({ okay: true });
         } else {
@@ -72,6 +73,75 @@ app.post('/register', async function (req, res) {
         }
     }
 });
+
+app.post('/create_room', async function(req, res){
+
+    try{
+        const { creator, name, description, max_members, rule, activeFor } = req.body;
+        
+
+        if (!name || !description || !creator) {
+                return res.status(400).json({
+                    okay: false,
+                    failure_message: "Missing required fields."
+                });
+            }
+
+
+    const result = await pool.request()
+        .input("creator", sql.NVarChar, creator)
+        .input("name", sql.NVarChar, name)
+        .input("description", sql.NVarChar, description)
+        .input("max_members", sql.Int, max_members)
+        .input("rule", sql.NVarChar, rule)
+        .input("active_for", sql.Int, activeFor)
+        .query(`
+            INSERT INTO Chatrooms
+            (
+                creator,
+                name,
+                description,
+                max_members,
+                chatroom_rule,
+                active_for
+            )
+            OUTPUT INSERTED.chatroom_id
+            VALUES
+            (
+                @creator,
+                @name,
+                @description,
+                @max_members,
+                @rule,
+                @active_for
+            );
+        `);
+
+        // Using OUTPUT INSERTED.chatroom_id is the standard 
+        // SQL Server way to retrieve the ID of the row that was just inserted.
+
+
+        const chat_id = result.recordset[0].chatroom_id;
+        res.json(
+            {
+                okay:true,
+                chat_id:chat_id
+            }
+        )
+    }
+    catch(err)
+    {
+        console.error(err);
+        // need to do this also!!
+        res.status(500).json(
+            {
+                okay:false,
+                failure_message:"Server Error backend"
+            }
+        )
+    }
+
+} );
 
 const PORT = 3000;
 app.listen(PORT, () => {

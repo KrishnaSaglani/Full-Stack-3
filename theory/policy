@@ -1,0 +1,2 @@
+1. Always better to let the server at the backend create the date rather than 
+generating it at the frontend, as frontend can be hacked

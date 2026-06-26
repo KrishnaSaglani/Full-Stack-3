@@ -115,7 +115,7 @@ async function enter_chats(userName) {
     localStorage.setItem('storedUser', userName);
     
     // Move to the next page
-    window.location.href = 'buffer.html';
+    window.location.href = '../buffer_screen/buffer.html';
 }
 
 

@@ -1,5 +1,5 @@
-1. Add description to browse screen
-2. Create create_chatroom screen
+1. Add description to browse screen--done
+2. Create create_chatroom screen -- done
 3. Start pipelining work in create_chatroom screen.
 Its basically going to involve:
     query to create table of chatrooms if not exists.

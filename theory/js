@@ -18,4 +18,39 @@
 
     use backticks `` and not quotes "" to do this
 
-    
+
+3. Always use good alert systems:
+    if (!name.trim()) {
+                alert("Room name cannot be empty.");
+                return;
+        }
+
+4. Fetch Request Format:
+
+    try{
+        const response= await fetch (create_room_URL, {
+            method:'POST',
+            headers:{
+                'Content-Type': 'application/json' // Tells the server "I am sending JSON"
+            },
+            body: JSON.stringify({
+                creator:creator,
+                name: name,
+                description: description,
+                max_members: max_members,
+                rule: rule,
+                activeFor: activeFor
+            })// Turns the JSON object into a string for the trip
+        });
+            if (!response.ok) {
+                throw new Error("Server error");
+            }
+
+        const result = await response.json();
+        // convert back to json
+
+        }
+    catch(err){...}
+    finally{...}
+
+5. location.reload() reloads the page!

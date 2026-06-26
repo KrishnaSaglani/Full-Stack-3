@@ -3,7 +3,8 @@
 
 //open theme room 
 function opentheme(themeName){
-    window.location.href = "buffer.html";
+    document.getElementById("chat_input_area").classList.add("active");
+    window.location.href = "../buffer_screen/buffer.html";
 }
 
 

@@ -1,0 +1,314 @@
+```css
+/* =========================
+   Basic Reset
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    padding: 55px 20px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: #e8edf7;
+
+    background:
+        radial-gradient(circle at 15% 20%, rgba(53, 88, 140, 0.2), transparent 32%),
+        radial-gradient(circle at 85% 80%, rgba(55, 70, 115, 0.16), transparent 35%),
+        linear-gradient(135deg, #070b14, #0c1425, #080d18);
+}
+
+/* =========================
+   Background Glow
+========================= */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.2;
+    z-index: -1;
+    animation: floatGlow 10s ease-in-out infinite alternate;
+}
+
+body::before {
+    background: #274c77;
+    top: -150px;
+    left: -130px;
+}
+
+body::after {
+    background: #3a506b;
+    bottom: -150px;
+    right: -130px;
+    animation-delay: 3s;
+}
+
+@keyframes floatGlow {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(45px, 35px);
+    }
+}
+
+/* =========================
+   Main Card
+========================= */
+#display {
+    width: 100%;
+    max-width: 700px;
+
+    padding: 30px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(16px);
+
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 18px;
+
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.45),
+        0 0 30px rgba(30, 58, 95, 0.16);
+
+    animation: appear 0.5s ease-out;
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================
+   Title
+========================= */
+#title {
+    text-align: center;
+    color: #f1f5f9;
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+/* =========================
+   Inputs & Select
+========================= */
+input,
+select {
+    width: 100%;
+    padding: 15px 18px;
+
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+
+    color: #e2e8f0;
+    font-size: 1rem;
+
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 12px;
+
+    outline: none;
+    transition: 0.25s ease;
+}
+
+input::placeholder {
+    color: rgba(203, 213, 225, 0.5);
+}
+
+input:focus,
+select:focus {
+    background: rgba(20, 30, 50, 0.9);
+
+    border-color: rgba(96, 165, 250, 0.55);
+
+    box-shadow: 0 0 16px rgba(59, 130, 246, 0.18);
+}
+
+/* Dropdown options */
+select option {
+    background: #111827;
+    color: #f8fafc;
+}
+
+/* =========================
+   Create Button
+========================= */
+.create {
+    width: 100%;
+    padding: 15px;
+
+    margin-top: 5px;
+
+    background: rgba(59, 130, 246, 0.18);
+    color: #dbeafe;
+
+    border: 1px solid rgba(96, 165, 250, 0.4);
+    border-radius: 12px;
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.create:hover {
+    background: rgba(59, 130, 246, 0.28);
+    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 8px 20px rgba(30, 64, 175, 0.2);
+}
+
+.create:active {
+    transform: scale(0.98);
+}
+
+/* =========================
+   Back Button
+========================= */
+.back {
+    align-self: flex-start;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 10px 18px;
+
+    background: rgba(255, 255, 255, 0.05);
+    color: #dbeafe;
+
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 10px;
+
+    font-size: 0.95rem;
+    font-weight: 500;
+
+    cursor: pointer;
+    transition: 0.22s ease;
+}
+
+.back::before {
+    content: "←";
+}
+
+.back:hover {
+    transform: translateX(-4px);
+
+    background: rgba(59, 130, 246, 0.14);
+    border-color: rgba(96, 165, 250, 0.45);
+
+    color: white;
+
+    box-shadow: 0 5px 16px rgba(30, 64, 175, 0.15);
+}
+
+/* =========================
+   Success & Failure Messages
+========================= */
+.success {
+    color: #4ade80;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.failure {
+    color: #f87171;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.failure_message {
+    color: #cbd5e1;
+    text-align: center;
+    font-size: 1rem;
+}
+
+/* =========================
+   Proceed / Retry Buttons
+========================= */
+.proceed,
+.retry {
+    width: 100%;
+    padding: 14px;
+
+    border: none;
+    border-radius: 12px;
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.proceed {
+    background: rgba(34, 197, 94, 0.2);
+    color: #bbf7d0;
+    border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.proceed:hover {
+    background: rgba(34, 197, 94, 0.3);
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 8px 18px rgba(34, 197, 94, 0.2);
+}
+
+.retry {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fecaca;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.retry:hover {
+    background: rgba(239, 68, 68, 0.3);
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 8px 18px rgba(239, 68, 68, 0.2);
+}
+
+/* =========================
+   Mobile
+========================= */
+@media (max-width: 650px) {
+
+    body {
+        padding: 20px;
+    }
+
+    #display {
+        padding: 22px;
+    }
+
+    #title {
+        font-size: 1.6rem;
+    }
+}
+```

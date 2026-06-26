@@ -217,6 +217,15 @@ body {
     pointer-events: none;
 }
 
+/* Chat input Area! */
+.chat_input_area {
+    display: none;
+}
+
+.chat_input_area.active {
+    display: flex;
+}
+
 /* =========================
    Typing Box
 ========================= */
