@@ -143,6 +143,49 @@ app.post('/create_room', async function(req, res){
 
 } );
 
+app.get('/refresh_chatrooms', async function(req, res){
+    try{
+        const expired_rooms = await pool.request()
+                        .query(`select * from Chatrooms
+                            where dateadd(DAY, active_for, date_created) 
+                            < cast(getdate() as date)`);
+
+        for( const room of expired_rooms.recordset)
+        {
+            console.log(`Deleting expired room ${room.name}`);
+        }
+
+        const result = await pool.request()
+                        .query(`
+                            delete from Chatrooms
+                            where dateadd(DAY, active_for, date_created) < cast(getdate() as DATE) `)
+
+        console.log(`${result.rowsAffected[0]} expired chatrooms removed`);
+        res.json({
+            success: true,
+            deleted: result.rowsAffected[0]
+        })
+    }
+    catch(err)
+    {
+        console.log(err);
+        res.json({
+            success: false,
+            message: "Failed to refresh chatrooms."
+        })
+    }
+});
+
+
+app.get('/retrieve_chatrooms', async function (req, res){
+
+    const result = await pool.request()
+                    .query(`select * from Chatrooms`);
+
+    res.json(result.recordset);
+
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server live at http://localhost:${PORT}`);

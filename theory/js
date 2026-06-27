@@ -54,3 +54,6 @@
     finally{...}
 
 5. location.reload() reloads the page!
+
+6. reading local storage:
+        const user = localStorage.getItem("stored_user");

@@ -1,55 +1,146 @@
 
+const API_URL = 'http://localhost:3000';
 
+
+
+const enter_URL = `${API_URL}/enter_chatroom`;
 async function enter_room(room){
     console.log(`entered room ${room.name}`);
 
 }
 
 
+const refresh_URL = API_URL + "/refresh_chatrooms";
+async function refresh_browse()
+{
+    try{
+        const response = await fetch(refresh_URL,{
+            method:"GET"
+        })
 
+        const result = await response.json();
+        if(result.success)
+        {
+            console.log('Refreshed successfully');
+        }
+        else{
+            console.log(result.message);
+        }
+    }
+    catch(err)
+    {
+        console.log('Unable to access server');
+    }
 
-const sample_rooms = 
-[
-    {id:"a",name:"room a", description:"description a"},
-    {id:"b",name:"room b", description:"description b"},
-    {id:"c",name:"room c", description:"description c"},
-    {id:"d",name:"room d", description:"description d"}
-]
+};
+refresh_browse();
 
-async function addChatrooms(){
-    buttonArea = document.querySelector(".centre_container");
+const add_chatrooms_URL = API_URL + "/retrieve_chatrooms"
+async function addChatrooms() {
 
-    for (const room of sample_rooms){
+    const buttonArea = document.querySelector(".centre_container");
 
-        // creating a button element
-        const button = document.createElement("button");
+    buttonArea.innerHTML = "";
+
+    try {
+
+        const response = await fetch(add_chatrooms_URL, {
+            method: "GET"
+        });
+
+        const rooms = await response.json();
+
+        console.log("Server response:", rooms);
+
+        const currentUser = localStorage.getItem("storedUser");
+
+        // Create headings only once
+        const myHeading = document.createElement("h2");
+        myHeading.innerText = "My Transmissions";
+        myHeading.classList.add("my_heading");
         
-        // creating the inside of each button:
-        const id = document.createElement("h2");
-        id.innerText = room.id;
 
-        const title = document.createElement("h3");
-        title.innerText= room.name;
+        const publicHeading = document.createElement("h2");
+        publicHeading.innerText = "Public Transmissions";
+        publicHeading.classList.add("public_heading");
 
-        const description = document.createElement("p");
-        description.innerText= room.description;
+        let myHeadingAdded = false;
+        let publicHeadingAdded = false;
+        
 
-        //adding all to button:
-        button.appendChild(id);
-        button.appendChild(title);
-        button.appendChild(description);
+        for (const room of rooms) {
 
+            console.log(`stored user is ${currentUser} `);
 
-        // giving it semantics
-        button.addEventListener("click", function(){enter_room(room)});
+            const button = document.createElement("button");
+            button.classList.add("chatroom_button");
 
-        // giving it a class
-        button.classList.add("chatroom_button");
+            //--------------------------------------------------
+            // Left side
+            //--------------------------------------------------
 
-        // adding it to the collection
-        buttonArea.appendChild(button);
+            const left = document.createElement("div");
+            left.classList.add("room_left");
+
+            const title = document.createElement("h3");
+            title.innerText = room.name;
+
+            const description = document.createElement("p");
+            description.innerText = room.description;
+
+            left.appendChild(title);
+            left.appendChild(description);
+
+            //--------------------------------------------------
+            // Right side
+            //--------------------------------------------------
+
+            const right = document.createElement("div");
+            right.classList.add("room_right");
+
+            right.innerHTML =
+                `${room.current_members}/${room.max_members}`;
+
+            button.appendChild(left);
+            button.appendChild(right);
+
+            //--------------------------------------------------
+
+            if (room.creator === currentUser) {
+
+                if (!myHeadingAdded) {
+                    buttonArea.appendChild(myHeading);
+                    myHeadingAdded = true;
+                }
+
+                button.classList.add("self_created");
+
+            }
+            else {
+
+                if (!publicHeadingAdded) {
+                    buttonArea.appendChild(publicHeading);
+                    publicHeadingAdded = true;
+                }
+
+                button.classList.add("public_room");
+
+            }
+
+            button.addEventListener("click", () => enter_room(room));
+
+            buttonArea.appendChild(button);
+
+        }
 
     }
+    catch (err) {
+
+        console.log(err);
+        alert("Server Error");
+
+    }
+
 }
 addChatrooms()
 

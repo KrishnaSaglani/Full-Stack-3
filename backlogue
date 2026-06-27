@@ -1,9 +1,14 @@
 1. Add description to browse screen--done
 2. Create create_chatroom screen -- done
-3. Start pipelining work in create_chatroom screen.
-Its basically going to involve:
+3. Start pipelining work in create_chatroom screen.  --done
+Its basically going to involve:  
     query to create table of chatrooms if not exists.
     query to add a chatroom with id, publisher and timestamp 
     then ACK is received and we can redirect to window.location.href ="browse"
 
     Thats it for today
+
+4. Populate the browse chatrooms page with all available chatrooms --done
+5. Differently label my chatrooms vs others' chatrooms  --done
+6. make an auto refresher for deleting old chatrooms.  --done
+
