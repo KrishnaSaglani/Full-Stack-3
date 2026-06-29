@@ -410,7 +410,7 @@ body {
 
 /* Placeholder message when no chat is open */
 .container_right::before {
-    content: "Select a theme or create a chatroom to begin";
+    content: "Create or Select a Chatroom to begin!";
     position: absolute;
     top: 45%;
     left: 50%;
@@ -420,6 +420,11 @@ body {
     font-size: 1rem;
     pointer-events: none;
 }
+
+.container_right.chat_open::before {
+    content: "";
+}
+
 
 /* Chat input Area! */
 .chat_input_area {

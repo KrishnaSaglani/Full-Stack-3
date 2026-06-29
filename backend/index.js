@@ -121,11 +121,11 @@ app.post('/create_room', async function(req, res){
         // SQL Server way to retrieve the ID of the row that was just inserted.
 
 
-        const chat_id = result.recordset[0].chatroom_id;
+        const chatroom_id = result.recordset[0].chatroom_id;
         res.json(
             {
                 okay:true,
-                chat_id:chat_id
+                chatroom_id:chatroom_id
             }
         )
     }
@@ -143,8 +143,9 @@ app.post('/create_room', async function(req, res){
 
 } );
 
-app.get('/refresh_chatrooms', async function(req, res){
-    try{
+
+app.get('/refresh_chatrooms', async function(req, res) {
+   try{
         const expired_rooms = await pool.request()
                         .query(`select * from Chatrooms
                             where dateadd(DAY, active_for, date_created) 
@@ -152,28 +153,64 @@ app.get('/refresh_chatrooms', async function(req, res){
 
         for( const room of expired_rooms.recordset)
         {
-            console.log(`Deleting expired room ${room.name}`);
+            console.log(`Deleting expired room tables for ${room.name}`);
+            const chatroom_id = room.chatroom_id;
+                        const result = await pool.request().input("chatroom_id", sql.Int, chatroom_id)
+                        .query(`DECLARE @RoomTable NVARCHAR(128);
+                                DECLARE @MembersTable NVARCHAR(128);
+                                DECLARE @SQL NVARCHAR(MAX);
+
+                                SET @RoomTable = 'Room_' + CAST(@chatroom_id AS VARCHAR(20));
+                                SET @MembersTable = @RoomTable + '_Members';
+
+                                -- Check Members table
+                                IF OBJECT_ID(@MembersTable, 'U') IS NULL
+                                BEGIN
+                                    THROW 50003, 'Chatroom members table does not exist.', 1;
+                                END
+
+                                -- Check Room table
+                                IF OBJECT_ID(@RoomTable, 'U') IS NULL
+                                BEGIN
+                                    THROW 50004, 'Chatroom table does not exist.', 1;
+                                END
+
+                                SET @SQL = '
+                                DROP TABLE ' + QUOTENAME(@MembersTable) + ';
+                                DROP TABLE ' + QUOTENAME(@RoomTable) + ';
+                                ';
+
+                                EXEC sp_executesql @SQL;`);
+            
+            
+            await pool.request()
+            .input("id", sql.Int, room.chatroom_id)
+            .query(`
+                DELETE FROM Chatrooms
+                WHERE chatroom_id=@id
+            `);
+            console.log(`Removed room ${room.name} from Chatrooms table`);
+
+
         }
-
-        const result = await pool.request()
-                        .query(`
-                            delete from Chatrooms
-                            where dateadd(DAY, active_for, date_created) < cast(getdate() as DATE) `)
-
-        console.log(`${result.rowsAffected[0]} expired chatrooms removed`);
         res.json({
-            success: true,
-            deleted: result.rowsAffected[0]
+            okay:true
         })
-    }
+
+        console.log(`Removed ${expired_rooms.recordset.length} Chatrooms due to expiry`);
+
+        }
     catch(err)
     {
-        console.log(err);
-        res.json({
-            success: false,
-            message: "Failed to refresh chatrooms."
-        })
+        console.error(err);
+        res.json(
+            {
+                okay:false,
+                message:err.message
+            }
+        )
     }
+    
 });
 
 
@@ -205,12 +242,49 @@ app.post("/delete_chatroom", async function (req, res){
             })
         }
         else{
-            console.log(`Chatroom ${chatroom_id} deleted successfully!`);
-            res.json({
-                okay:true
-            })
+            console.log(`Chatroom ${chatroom_id} deleted successfully from Chatrooms table!`);
         }
 
+
+
+
+        //Now remove the corresponding tables also!!
+
+        console.log(`Removing Tables for chatroom: ${chatroom_id}`);
+
+        await pool.request().input("chatroom_id", sql.Int, chatroom_id)
+                        .query(`DECLARE @RoomTable NVARCHAR(128);
+                                DECLARE @MembersTable NVARCHAR(128);
+                                DECLARE @SQL NVARCHAR(MAX);
+
+                                SET @RoomTable = 'Room_' + CAST(@chatroom_id AS VARCHAR(20));
+                                SET @MembersTable = @RoomTable + '_Members';
+
+                                -- Check Members table
+                                IF OBJECT_ID(@MembersTable, 'U') IS NULL
+                                BEGIN
+                                    THROW 50003, 'Chatroom members table does not exist.', 1;
+                                END
+
+                                -- Check Room table
+                                IF OBJECT_ID(@RoomTable, 'U') IS NULL
+                                BEGIN
+                                    THROW 50004, 'Chatroom table does not exist.', 1;
+                                END
+
+                                SET @SQL = '
+                                DROP TABLE ' + QUOTENAME(@MembersTable) + ';
+                                DROP TABLE ' + QUOTENAME(@RoomTable) + ';
+                                ';
+
+                                EXEC sp_executesql @SQL;`);
+
+        console.log(`Removed room_id: ${chatroom_id} from Chatrooms table`);
+
+        res.json({
+                okay:true
+            })
+            
     }
     catch(err)
     {
@@ -221,6 +295,106 @@ app.post("/delete_chatroom", async function (req, res){
         })
     }
     
+});
+
+app.post("/create_tables",async function(req, res){
+    const {chatroom_id} = req.body;
+
+    try{
+        const result=await pool.request().input("chatroom_id",sql.Int, chatroom_id)
+        .query(`DECLARE @TableName NVARCHAR(128);
+                    DECLARE @SQL NVARCHAR(MAX);
+
+                    SET @TableName = 'Room_' + CAST(@chatroom_id AS VARCHAR(20));
+
+                    IF OBJECT_ID(@TableName, 'U') IS NOT NULL
+                    BEGIN
+                        THROW 50001, 'Chatroom table already exists.', 1;
+                    END
+
+                    SET @SQL = '
+                    CREATE TABLE ' + QUOTENAME(@TableName) + ' (
+
+                        chat_id INT IDENTITY(1,1) PRIMARY KEY,
+
+                        sender NVARCHAR(100) NOT NULL,
+
+                        notif NVARCHAR(50),
+
+                        sent_at DATETIME NOT NULL DEFAULT GETDATE(),
+
+                        deleted BIT NOT NULL DEFAULT 0,
+
+                        replying BIT NOT NULL DEFAULT 0,
+
+                        message NVARCHAR(MAX) NOT NULL
+
+                    );';
+
+                    EXEC sp_executesql @SQL;`);
+
+        // In case of insertion or deletion queries, no recordset is returned
+        res.json({
+            okay:true
+        })
+
+    }
+    catch(err)
+    {
+        console.error(err);
+        res.json(
+            {
+                okay:false,
+                message:`Unable to create room table for room_id: ${chatroom_id}`
+            }
+        )
+
+    }
+
+
+    // Now creating the members table similarly:
+    try{
+        const result = await pool.request().input("chatroom_id", sql.Int, chatroom_id)
+        .query(`DECLARE @TableName NVARCHAR(128);
+            DECLARE @SQL NVARCHAR(MAX);
+
+            SET @TableName = 'Room_' + CAST(@chatroom_id AS VARCHAR(20)) + '_Members';
+
+            IF OBJECT_ID(@TableName, 'U') IS NOT NULL
+            BEGIN
+                THROW 50002, 'Chatroom members table already exists.', 1;
+            END
+
+            SET @SQL = '
+            CREATE TABLE ' + QUOTENAME(@TableName) + ' (
+
+                member_id INT IDENTITY(1,1) PRIMARY KEY,
+
+                member_name NVARCHAR(100) NOT NULL
+
+            );';
+
+            EXEC sp_executesql @SQL;`);
+
+
+            res.json({
+                okay:true
+            })
+    }catch(err)
+    {
+        console.log(err);
+        res.json(
+            {
+                okay:false,
+                message:`Unable to create room table for room_id: ${chatroom_id}`
+            }
+        )
+    }
+
+
+
+
+
 });
 
 const PORT = 3000;

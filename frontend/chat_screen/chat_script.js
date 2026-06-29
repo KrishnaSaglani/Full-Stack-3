@@ -11,6 +11,7 @@ function open_chat()
     // make required stuff visible!
     document.getElementById("leaveButton").style.display ="flex";
     document.getElementById("chat_input_area").style.display ="flex";
+    document.querySelector(".container_right").classList.add("chat_open");
 
     // adding title
     const title = document.getElementById("room_title");
@@ -18,6 +19,12 @@ function open_chat()
     
 
     console.log(`Entered room ${current_room.name}`);
+
+
+    // add a member to Chatrooms table and well as this chatroom's table
+
+
+    // load all chats
 
     
 }
@@ -31,6 +38,10 @@ function leave_chat()
     document.getElementById("leaveButton").style.display ="none";
     document.getElementById("room_title").innerText ="";
     localStorage.setItem('current_room', null);
+    document.querySelector(".container_right").classList.remove("chat_open");
+
+
+    // remove a member from chatroom members
 }
 
 
@@ -59,7 +70,7 @@ async function send_chat() {
 
     const typed = document.querySelector(".typing_box");
 
-    const msgText = typed.value.trim()
+    const msgText = typed.value.trim();
 
     if(msgText=="")return;
 
@@ -73,6 +84,13 @@ async function send_chat() {
 
 
     chatArea.appendChild(message);
+
+    // Send this chat to database.
+    // Then members can refresh and view chat.
+
+
+
+
     /* Scroll chat area to the newest message */
     chatArea.scrollTop = chatArea.scrollHeight;
 

@@ -1,2 +1,6 @@
 1. Always better to let the server at the backend create the date rather than 
 generating it at the frontend, as frontend can be hacked
+
+
+2. Try to do a majority of the sql related work in the backend. Keep minimal 
+logic in frontend javascript for safety AND simplicity.

@@ -9,7 +9,48 @@ function retry(){
     window.location.href ="create_room.html";
 }
 
+
+const create_tables_URL = "http://localhost:3000/create_tables";
+
+async function create_tables(chatroom_id, name){
+
+    try{
+        const response= await fetch (create_tables_URL, {
+            method:'POST',
+            headers:{
+                'Content-Type': 'application/json' // Tells the server "I am sending JSON"
+            },
+            body: JSON.stringify({
+                chatroom_id:chatroom_id
+            })// Turns the JSON object into a string for the trip
+        });
+
+        const result = await response.json();
+
+        if(result.okay)
+        {
+            console.log(`Tables for Room: ${name} successfully created`);
+            return
+        }
+        else
+        {
+            console.log(result.message);
+        }
+
+    }
+    catch(err)
+    {
+        console.err(err);
+        return alert(`Server Error`);
+    }
+
+}
+
+
+
 const create_room_URL = "http://localhost:3000/create_room";
+
+
 async function create_room(){
     const creator = localStorage.getItem('storedUser');
     const name = document.getElementById("name").value;
@@ -64,14 +105,21 @@ async function create_room(){
 
         const result = await response.json();
         // converting back to json to use
-        // result contains: okay, chat_id, err, failure_message
+        // result contains: okay, chatroom_id, err, failure_message
 
         const show_result = document.getElementById("display");
         if(result.okay)
         {   
             show_result.innerHTML=`
             <h1 class = "success">Room Created Successfully</h1>
-            <button class = "proceed" onclick="enter_chat(${result.chat_id})"> Proceed </button>
+            <button class = "proceed" onclick="create_tables(${result.chatroom_id}, ${result.name})"> Proceed to Create... </button>
+            <div class="details"> 
+                Chatroom name: ${name},
+                Description: ${description},
+                Max_members: ${max_members},
+                Rule: ${rule},
+                Active For: ${activeFor}
+            </div>
             `;
         }
         else{

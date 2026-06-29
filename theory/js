@@ -118,3 +118,6 @@
         document.getElementById('chats').prepend(title);
         // prepend() is better than appendChild() here because you probably 
         // want the title at the top of the chat.
+
+
+12. Await can ONLY be called inside an async function!!
