@@ -8,17 +8,27 @@
 </head>
 
 <body>
-    <h1 class = "hello_msg" id = "hello_msg">Hello, </h1>
-    <script>
-        const user = localStorage.getItem('storedUser');
-        if (user) {
-                document.getElementById('hello_msg').innerText += `${user}`;
-            } else {
-                // If someone tries to visit buffer.html without logging in, kick them out!
-                alert("Unauthorized! Please login first.");
-                window.location.href = 'login.html';
-            }
-    </script>
+
+    <div class="nav_bar">
+
+    <div class="nav_left">
+
+        <button class="profile_button">Profile</button>
+        <button class="about_button">About</button>
+
+    </div>
+
+    <div id="room_title"></div>
+
+    <div class="nav_right">
+
+        <button id="leaveButton" onclick="leave_chat()">← Leave Chat</button>
+        <button class="logout_button" onclick="logout()">Logout</button>
+
+    </div>
+
+</div>
+
 
     <div class="container_left" id="menu">
     </div>
@@ -38,6 +48,8 @@
     </div>
 
     <div class = "container_right" id = "chats">
+
+        <button id="leaveButton" class = "leave" onclick="leave_chat()">Leave Room</button>
 
             <!-- Messages go here -->
 

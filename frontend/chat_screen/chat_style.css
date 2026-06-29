@@ -22,31 +22,235 @@ body {
 /* =========================
    Header
 ========================= */
-.hello_msg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+/* ===================================================
+   NAVIGATION BAR
+=================================================== */
 
-    height: 72px;
-    display: flex;
-    align-items: center;
+.nav_bar{
 
-    padding-left: 28px;
-    z-index: 10;
+    position:fixed;
 
-    font-size: 1.35rem;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-    color: #f1f5f9;
+    top:0;
+    left:0;
+    right:0;
 
-    background: rgba(10, 17, 34, 0.88);
-    backdrop-filter: blur(16px);
+    height:82px;
 
-    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
-    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.22);
+    display:flex;
+
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 28px;
+
+    background:rgba(10,17,34,.90);
+
+    backdrop-filter:blur(18px);
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+    box-shadow:0 8px 22px rgba(0,0,0,.28);
+
+    z-index:1000;
+
 }
 
+/* ===================================================
+   LEFT & RIGHT GROUPS
+=================================================== */
+
+.nav_left,
+.nav_right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+/* ===================================================
+   ROOM TITLE
+=================================================== */
+
+#room_title{
+
+    position:absolute;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    font-size:2rem;
+
+    font-weight:800;
+
+    letter-spacing:3px;
+
+    text-transform:uppercase;
+
+    color:#ffffff;
+
+    white-space:nowrap;
+
+    text-shadow:
+        0 0 10px rgba(255,255,255,.08);
+
+}
+
+/* ===================================================
+   PROFILE BUTTON
+=================================================== */
+
+.profile_button{
+
+    padding:10px 20px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:linear-gradient(
+        135deg,
+        #1cb56c,
+        #11884f
+    );
+
+    color:white;
+
+    font-size:.95rem;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.profile_button:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 6px 18px rgba(28,181,108,.35);
+
+}
+
+/* ===================================================
+   ABOUT BUTTON
+=================================================== */
+
+.about_button{
+
+    padding:10px 20px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:linear-gradient(
+        135deg,
+        #3188ff,
+        #1b5fd0
+    );
+
+    color:white;
+
+    font-size:.95rem;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.about_button:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 6px 18px rgba(49,136,255,.35);
+
+}
+
+/* ===================================================
+   LEAVE CHAT
+=================================================== */
+
+#leaveButton{
+
+    display:none;
+
+    padding:10px 18px;
+
+    border-radius:12px;
+
+    border:1px solid rgba(255,90,90,.35);
+
+    background:rgba(255,70,70,.10);
+
+    color:#ffdcdc;
+
+    font-size:.95rem;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+#leaveButton:hover{
+
+    background:rgba(255,70,70,.22);
+
+    border-color:#ff7070;
+
+    color:white;
+
+}
+
+/* ===================================================
+   LOGOUT
+=================================================== */
+
+.logout_button{
+
+    padding:10px 20px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#c62828;
+
+    color:white;
+
+    font-size:.95rem;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.logout_button:hover{
+
+    background:#e53935;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 6px 18px rgba(229,57,53,.35);
+
+}
 /* =========================
    Left Sidebar: Themes
 ========================= */

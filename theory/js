@@ -56,4 +56,65 @@
 5. location.reload() reloads the page!
 
 6. reading local storage:
-        const user = localStorage.getItem("stored_user");
+        const user = localStorage.getItem("storedUser");
+        localStorage.setItem('storedUser', userName);
+
+7. Date and time in Javascript
+
+        const created = new Date(room.date_created);
+
+        const expiry = new Date(created);
+        expiry.setDate(expiry.getDate() + room.active_for);
+
+        const now = new Date();
+
+        const diff = expiry - now;   // milliseconds remaining
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+        const hours = Math.floor(
+            (diff % (1000 * 60 * 60 * 24)) /
+            (1000 * 60 * 60)
+        );
+
+
+8. Event Listeners
+
+        //most importantly this is how to add onlclick separately
+            button.addEventListener("click", function(){ enter_room(room)});
+
+
+
+
+        const typingBox = document.querySelector(".typing_box");
+        typingBox.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                send_chat();
+            }
+        });
+
+
+
+        delete_button.addEventListener("click", function()
+                    {
+                        event.stopPropagation();
+                        // prevents the parent button to also be pressed!!
+                        delete_chatroom(room.chatroom_id)
+                    });
+
+                    button.appendChild(delete_button);
+
+                    
+
+
+9. JS uses null and not NULL
+
+10. Changing CSS using Javascript:
+        document.getElementById("chat_input_area").style.display ="none";
+
+11. Prepend vs appendChild
+
+        document.getElementById('chats').prepend(title);
+        // prepend() is better than appendChild() here because you probably 
+        // want the title at the top of the chat.

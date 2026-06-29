@@ -1,0 +1,2 @@
+1.  const {chatroom_id} = req.body;
+    // Name has to be the SAME as sent in script

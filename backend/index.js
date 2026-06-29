@@ -186,6 +186,43 @@ app.get('/retrieve_chatrooms', async function (req, res){
 
 });
 
+
+
+
+app.post("/delete_chatroom", async function (req, res){
+    const {chatroom_id} = req.body;
+    // Name has to be the SAME as sent in script
+    try{
+        const result = await pool.request().input("chatroom_id", sql.Int, chatroom_id)
+                    .query(`delete from Chatrooms where 
+                        chatroom_id = @chatroom_id`);
+        
+        if(result.rowsAffected[0]===0)
+        {
+            return res.json({
+                okay:false,
+                message:"Unable to find room"
+            })
+        }
+        else{
+            console.log(`Chatroom ${chatroom_id} deleted successfully!`);
+            res.json({
+                okay:true
+            })
+        }
+
+    }
+    catch(err)
+    {
+        console.error(err);
+        res.status(500).json({
+            okay:false,
+            message:"Server Error"
+        })
+    }
+    
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server live at http://localhost:${PORT}`);
