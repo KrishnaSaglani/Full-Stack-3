@@ -481,37 +481,331 @@ body {
    Example Chat Message Styles
    Use these later from JavaScript
 ========================= */
-.message {
-    max-width: 70%;
-    width: fit-content;
-    padding: 11px 14px;
-    margin-bottom: 12px;
+/* =====================================================
+   CHAT AREA
+===================================================== */
 
-    border-radius: 12px;
-    line-height: 1.4;
-    font-size: 0.95rem;
+/* =====================================================
+   MESSAGE BUBBLE
+===================================================== */
+
+.message{
+
+    position:relative;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+
+    max-width:72%;
+
+    padding:14px 18px;
+
+    border-radius:18px;
+
+    backdrop-filter:blur(16px);
+
+    word-wrap:break-word;
+
+    animation:fadeIn .25s ease;
+
 }
 
-.message.received {
-    margin-right: auto;
-    color: #dbeafe;
+/* =====================================================
+   SENT MESSAGE
+===================================================== */
 
-    background: rgba(71, 85, 105, 0.32);
-    border: 1px solid rgba(148, 163, 184, 0.12);
+.sent{
 
-    border-bottom-left-radius: 3px;
+    margin-left:auto;
+
+    background:rgba(0,255,255,.10);
+
+    border:1.5px solid rgba(0,255,255,.28);
+
+    color:white;
+
 }
 
-.message.sent {
-    margin-left: auto;
-    color: #ffffff;
+/* =====================================================
+   RECEIVED MESSAGE
+===================================================== */
 
-    background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
-    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
+.received{
 
-    border-bottom-right-radius: 3px;
+    margin-right:auto;
+
+    background:rgba(180,70,255,.10);
+
+    border:1.5px solid rgba(180,70,255,.28);
+
+    color:white;
+
 }
 
+/* =====================================================
+   SENDER
+===================================================== */
+
+.sender{
+
+    font-size:.75rem;
+
+    font-weight:700;
+
+    color:#98dfff;
+
+    letter-spacing:.5px;
+
+    opacity:.85;
+
+}
+
+/* =====================================================
+   MESSAGE TEXT
+===================================================== */
+
+.text{
+
+    font-size:1rem;
+
+    line-height:1.55;
+
+    color:white;
+
+}
+
+/* =====================================================
+   DELETED MESSAGE
+===================================================== */
+
+.deleted{
+
+    opacity:.55;
+
+    font-style:italic;
+
+}
+
+.deleted .text{
+
+    color:#bbbbbb;
+
+}
+
+/* =====================================================
+   EDITED
+===================================================== */
+
+.edited::after{
+
+    content:"edited";
+
+    align-self:flex-end;
+
+    font-size:.7rem;
+
+    margin-top:4px;
+
+    color:#9ca3af;
+
+}
+
+/* =====================================================
+   OPTIONS BUTTON
+===================================================== */
+
+.message button{
+
+    position:absolute;
+
+    top:8px;
+
+    right:8px;
+
+    width:28px;
+
+    height:28px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.05);
+
+    color:white;
+
+    font-size:1rem;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.message button:hover{
+
+    background:rgba(255,255,255,.18);
+
+}
+
+/* =====================================================
+   CHAT MENU
+===================================================== */
+
+.chat_menu{
+
+    position:absolute;
+
+    top:36px;
+
+    right:8px;
+
+    width:150px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    padding:10px;
+
+    border-radius:12px;
+
+    background:rgba(12,20,36,.95);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.10);
+
+    box-shadow:0 12px 28px rgba(0,0,0,.35);
+
+    z-index:500;
+
+}
+
+/* =====================================================
+   MENU BUTTONS
+===================================================== */
+
+.chat_menu button{
+
+    position:static;
+
+    width:100%;
+
+    height:auto;
+
+    padding:10px;
+
+    border-radius:8px;
+
+    border:none;
+
+    background:rgba(255,255,255,.05);
+
+    color:white;
+
+    font-size:.9rem;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.chat_menu button:hover{
+
+    background:rgba(0,255,255,.15);
+
+}
+
+/* Delete */
+
+.delete_chat:hover{
+
+    background:rgba(255,70,70,.18);
+
+    color:#ffb7b7;
+
+}
+
+/* Edit */
+
+.edit_chat:hover{
+
+    background:rgba(255,210,60,.15);
+
+    color:#ffe98c;
+
+}
+
+/* Reply */
+
+.replying:hover{
+
+    background:rgba(90,255,160,.16);
+
+    color:#baffd4;
+
+}
+
+/* =====================================================
+   SCROLLBAR
+===================================================== */
+
+.container_right::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+.container_right::-webkit-scrollbar-track{
+
+    background:transparent;
+
+}
+
+.container_right::-webkit-scrollbar-thumb{
+
+    background:rgba(255,255,255,.18);
+
+    border-radius:20px;
+
+}
+
+.container_right::-webkit-scrollbar-thumb:hover{
+
+    background:rgba(255,255,255,.30);
+
+}
+
+/* =====================================================
+   ANIMATION
+===================================================== */
+
+@keyframes fadeIn{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(10px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
 /* =========================
    Mobile Layout
 ========================= */

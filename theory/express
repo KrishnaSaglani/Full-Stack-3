@@ -1,2 +1,9 @@
 1.  const {chatroom_id} = req.body;
     // Name has to be the SAME as sent in script
+
+2. All queries return a recordset, recordsets in case of multiple queries,
+and rowsAffected also. To find length you can also use recordset.length;
+
+
+3. All communication btw frontend and backend is in STRINGS. You have to 
+parse BACK into json when they arrive at either end!

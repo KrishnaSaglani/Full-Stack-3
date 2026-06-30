@@ -74,6 +74,7 @@ app.post('/register', async function (req, res) {
     }
 });
 
+
 app.post('/create_room', async function(req, res){
 
     try{
@@ -122,7 +123,7 @@ app.post('/create_room', async function(req, res){
 
 
         const chatroom_id = result.recordset[0].chatroom_id;
-        res.json(
+        return res.json(
             {
                 okay:true,
                 chatroom_id:chatroom_id
@@ -142,7 +143,6 @@ app.post('/create_room', async function(req, res){
     }
 
 } );
-
 
 app.get('/refresh_chatrooms', async function(req, res) {
    try{
@@ -193,11 +193,13 @@ app.get('/refresh_chatrooms', async function(req, res) {
 
 
         }
-        res.json({
+
+        console.log(`Removed ${expired_rooms.recordset.length} Chatrooms due to expiry`);
+        return res.json({
             okay:true
         })
 
-        console.log(`Removed ${expired_rooms.recordset.length} Chatrooms due to expiry`);
+        
 
         }
     catch(err)
@@ -222,8 +224,6 @@ app.get('/retrieve_chatrooms', async function (req, res){
     res.json(result.recordset);
 
 });
-
-
 
 
 app.post("/delete_chatroom", async function (req, res){
@@ -296,6 +296,7 @@ app.post("/delete_chatroom", async function (req, res){
     }
     
 });
+
 
 app.post("/create_tables",async function(req, res){
     const {chatroom_id} = req.body;
@@ -370,7 +371,7 @@ app.post("/create_tables",async function(req, res){
 
                 member_id INT IDENTITY(1,1) PRIMARY KEY,
 
-                member_name NVARCHAR(100) NOT NULL
+                member_name NVARCHAR(100) NOT NULL UNIQUE
 
             );';
 
@@ -396,6 +397,214 @@ app.post("/create_tables",async function(req, res){
 
 
 });
+
+
+
+app.post("/load_chats", async function(req, res){
+    const{chatroom_id, last_chat_id} = req.body;
+    try{
+        const room_name = `Room_${chatroom_id}`;
+        const result = await pool.request()
+        .input("room_name", sql.NVarChar, room_name)
+        .input("last_chat_id", sql.Int, last_chat_id)
+        .query(`
+
+            DECLARE @SQL NVARCHAR(MAX);
+
+            SET @SQL = '
+            SELECT *
+            FROM ' + QUOTENAME(@room_name) + '
+            WHERE chat_id > @last_chat_id
+            ORDER BY chat_id;
+            ';
+
+            EXEC sp_executesql
+                @SQL,
+                N'@last_chat_id INT',
+                @last_chat_id = @last_chat_id;
+            
+            `);
+
+
+        res.json({
+            okay:true,
+            new_chats:result.recordset
+        })
+        
+    }
+    catch(err)
+    {
+        console.error(err);
+        res.json({
+            okay:false,
+            message:err.message
+        })
+    }
+});
+
+async function rollbackMemberCount(chatroom_id){
+
+    await pool.request()
+        .input("chatroom_id", sql.Int, chatroom_id)
+        .query(`
+            UPDATE Chatrooms
+            SET current_members=current_members-1
+            WHERE chatroom_id=@chatroom_id
+        `);
+
+}
+app.post("/add_member", async function(req, res){
+    const{user, chatroom_id} = req.body;
+    const chatroom_name = `Room_${chatroom_id}_Members`;
+    try{
+        // first check in Chatrooms if for this id, is current_members<max_members?
+        const result1 = await pool.request().input("chatroom_id", sql.Int, chatroom_id)
+        .query(`update Chatrooms
+            set current_members = current_members+1
+            where chatroom_id = @chatroom_id
+            and current_members < max_members`);
+        
+
+        if(result1.rowsAffected[0]===0)
+        {
+            return res.json({
+                okay:false,
+                message:"Chatroom already full."
+            })
+        }
+        else
+        {
+            
+            // current_members<max_members
+            console.log(`Chatroom ${chatroom_id} has enough space for you to enter`);
+
+            // Now add the members in
+            try{
+                const result2 = await pool.request().input("chatroom_name", sql.NVarChar, chatroom_name)
+                .input("user", sql.NVarChar, user)
+                .query(`DECLARE @SQL NVARCHAR(MAX);
+
+                SET @SQL = '
+                INSERT INTO ' + QUOTENAME(@chatroom_name) + '
+                (member_name)
+
+                VALUES (@user);
+                ';
+
+                EXEC sp_executesql
+                    @SQL,
+                    N'@user NVARCHAR(100)',
+                    @user = @user;`);
+                // query should add this user into the table with name @chatroom_name
+                // basically an insert query
+                res.json({
+                    okay:true
+                })
+            }
+            catch(err)
+            {
+                console.log("Unable to add you into actual chatroom list")
+                
+                if(err.number === 2627 || err.number === 2601)
+                    {
+                        // doing rollback, removing one extra added member
+                        await rollbackMemberCount(chatroom_id);
+                        return res.json({
+                            okay:false,
+                            message:"You are already a member of this chatroom."
+                        });
+                    }
+
+                else
+                {
+                    // doing rollback, removing one extra added member
+                        await rollbackMemberCount(chatroom_id);
+                    
+                    return res.json(
+                    {
+                        okay:false,
+                        message:`Unable to enter data into tables for ${user}`
+                    }
+                )
+
+                }
+            }
+            
+        }
+    }
+    catch(err)
+    {
+        console.error(err);
+
+        return res.json({
+            okay:false,
+            message:"Server Error pls try again."
+        })
+    }
+});
+
+
+app.post("/remove_member", async function(req, res){
+    const{user, chatroom_id} = req.body;
+    const chatroom_name = `Room_${chatroom_id}_Members`;
+    try{
+
+        // Remove from chatroom first
+        const result2 = await pool.request().input("chatroom_name", sql.NVarChar, chatroom_name)
+                .input("user", sql.NVarChar, user)
+                .query(`DECLARE @SQL NVARCHAR(MAX);
+
+                    SET @SQL = '
+                    DELETE FROM ' + QUOTENAME(@chatroom_name) + '
+                    WHERE member_name = @user;
+
+                    IF @@ROWCOUNT = 0
+                    BEGIN
+                        THROW 50011, ''User is not a member of this chatroom.'', 1;
+                    END
+                    ';
+
+                    EXEC sp_executesql
+                        @SQL,
+                        N'@user NVARCHAR(100)',
+                        @user = @user;`);
+
+
+
+            console.log(`Successfully removed from Room_${chatroom_id}`);
+
+        // reducing current_members count!
+        await pool.request().input("chatroom_id", sql.Int, chatroom_id)
+        .query(`update Chatrooms
+            set current_members = current_members-1
+            where chatroom_id = @chatroom_id
+            AND current_members>0;`);
+
+
+            res.json({
+                okay:true
+            })
+
+
+    }
+    catch(err)
+    {
+        console.error(err);
+         if(err.number === 50011)
+            {
+                return res.json({
+                    okay:false,
+                    message:"You are not a member of this chatroom."
+                });
+            }
+
+            res.json({
+                okay:false,
+                message:"Server Error"
+            })
+    }
+});
+
 
 const PORT = 3000;
 app.listen(PORT, () => {

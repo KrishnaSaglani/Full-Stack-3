@@ -59,6 +59,20 @@
         const user = localStorage.getItem("storedUser");
         localStorage.setItem('storedUser', userName);
 
+
+Also:
+// local storage stores data in string 
+    const room_string = localStorage.getItem('current_room');
+    const current_room = JSON.parse(room_string);
+
+Also:
+// NEVER DO: 
+    localStorage.setItem('current_room', null);
+// Because it converts everything, here null, into a STRING and stores it!!
+
+// INSTEAD DO:
+    localStorage.removeItem("current_room");
+
 7. Date and time in Javascript
 
         const created = new Date(room.date_created);
@@ -121,3 +135,33 @@
 
 
 12. Await can ONLY be called inside an async function!!
+
+13. Convertion to string:
+                    const room_name = "Room_"+String(chatroom_id);
+                    const room_name = `Room_${chatroom_id}`;
+
+14. Looping A function after a fixed time interval (Polling):
+
+    // entering the room
+        load_chats(current_room.chatroom_id);
+
+        pollingInterval = setInterval(function(){
+
+            load_chats(current_room.chatroom_id);
+
+        }, 1000);
+
+    // When leaving the room:
+
+        clearInterval(pollingInterval);
+
+
+15. Importance of await:
+
+// DONT forget to do await!!! Or execution will simply move ahead!!
+        await remove_member(current_room.chatroom_id);
+        localStorage.removeItem("current_room");
+// without await this will give error!!
+
+Also, now that you are using await, this function must be defined
+as async

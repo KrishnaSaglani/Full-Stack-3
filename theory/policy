@@ -4,3 +4,19 @@ generating it at the frontend, as frontend can be hacked
 
 2. Try to do a majority of the sql related work in the backend. Keep minimal 
 logic in frontend javascript for safety AND simplicity.
+
+3. Race condition: Doing an Update query after a select query causes this often.
+That's why its much better to simply use Update and Where.
+
+4. Adding members to a list:
+    A.Update current_members = current_members+1 IF list not full
+    B.Add members to list
+    C. If ADD fails, do rollback: current_members = current_members -1
+
+5. Removing Members from a list:
+    A.Remove Member from list
+    B.If removal succeeds, then do current_members = current_members -1
+    C. Else throw error
+
+These are the most logically accurate ways to do so. Any other way 
+risks race condition, or simple logical failure in certain cases.

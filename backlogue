@@ -12,14 +12,25 @@ Its basically going to involve:
 5. Differently label my chatrooms vs others' chatrooms  --done
 6. make an auto refresher for deleting old chatrooms.  --done
 
+
+
 7. Create tables for chats --done
 8. Add timer to browse rooms.   --done
 9. Add delete button to browse rooms for my rooms.  --done
 10. Add confirmation for delete button.
 
+
+
 11. Logout Button --done
 12. Leave Chats Button -- done
 13. Delete tables for the chats when their time is up/ they are manually deleted by user. --done
-14. Load the chats on entering the chatroom.
-15. Load every message sent by anyone into database.
-16. Make Everything Live using socket.io.
+
+
+
+14. Add member to tables whenever entering a room. Also remove member whenever leaving a room. --done
+15. Load the chats on entering the chatroom. --done
+16. Load every message sent by anyone into database.
+17. Implement a smart polling system that retrieves NEW chats every 1-2 seconds. --done
+
+
+18. Implement 
