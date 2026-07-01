@@ -1,3 +1,4 @@
+// const { json } = require("body-parser");
 
 const API_URL = 'http://localhost:3000';
 
@@ -38,6 +39,7 @@ async function browse_chatroom_page(){
 
     // stop polling this chat
     stopPolling();
+    leave_chat();
 
     window.location.href = "../browse_screen/browse.html";
 }
@@ -46,11 +48,10 @@ async function browse_chatroom_page(){
 async function create_chatroom_page(){
     // stop polling the chat
     stopPolling();
+    leave_chat();
 
     window.location.href = "../create_room_screen/create_room.html";
 }
-
-
 
 
 // open chat
@@ -274,8 +275,7 @@ async function load_chats(chatroom_id, last_chat_id){
 
                     // creating an options button used to delete, edit or reply
                     const options = document.createElement("button");
-                    options.innerText = "⋮";
-                    // should be a small dropdown arrow 
+                    options.innerText = "⋮"; 
                     options.addEventListener("click", async function(event)
                         {
                             event.stopPropagation();
@@ -287,6 +287,7 @@ async function load_chats(chatroom_id, last_chat_id){
                             <button class="edit_chat" onclick="edit_chat(${chat.chat_id})">Edit</button>
                             <button class="replying" onclick="reply_chat(${chat.chat_id})">Reply</button>
                             `
+                            // add it to message bar itself!!
                             message.appendChild(menu);
                         });
                     message.appendChild(options);
@@ -314,39 +315,63 @@ async function load_chats(chatroom_id, last_chat_id){
     
 }
 
-//sending chats
-async function send_chat() {
 
-    const chatArea = document.querySelector(".container_right");
+const upload_chats_URL = API_URL + "/upload_chat";
+async function send_chat()
+{
+    // first select a room!
+    const current_room_string = localStorage.getItem('current_room');
+    // This is always string!!!
+    const current_room = JSON.parse(current_room_string);
+    const room_id = current_room.chatroom_id;
 
-    const typed = document.querySelector(".typing_box");
+    // finding the message itself
+    const msgBox = document.querySelector(".typing_box");
+    const chatArea = document.getElementById("chats");
+    const typed = msgBox.value.trim();
+    if(typed=="")return;
 
-    const msgText = typed.value.trim();
+    // finding the message sender's name
+    const sender = localStorage.getItem('storedUser');
 
-    if(msgText=="")return;
+    // doing the fetch request
+    try{
+        const response = await fetch(upload_chats_URL, {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+                room_id:room_id,
+                sender:sender,
+                notif:"none",
+                replying: false,
+                replying_to:"none",
+                deleted:false,
+                message:typed
+            })
+        });
 
-    const message = document.createElement("div");
-    message.classList.add("message","sent");
-    message.innerText = msgText;
-    console.log(message.innerHTML);
+        const result = await response.json();
 
-    typed.value="";
-    typed.focus();
+        if(result.okay)
+        {
+            console.log(`Message :${typed} sent to database successfully`);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            msgBox.value ="";
+            msgBox.focus();
+        }
+        else
+        {
+            console.log(`Unable to send message to db`);
+        }
 
+    }
+    catch(err)
+    {
+        console.log(err);
+    }
 
-    chatArea.appendChild(message);
-
-    // Send this chat to database.
-    // Then members can refresh and view chat.
-
-
-
-
-    /* Scroll chat area to the newest message */
-    chatArea.scrollTop = chatArea.scrollHeight;
-
-    
 }
+
 
 // we want to click send button whenever enter is pressed!
 const typingBox = document.querySelector(".typing_box");

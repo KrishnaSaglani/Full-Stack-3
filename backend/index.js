@@ -327,6 +327,8 @@ app.post("/create_tables",async function(req, res){
                         deleted BIT NOT NULL DEFAULT 0,
 
                         replying BIT NOT NULL DEFAULT 0,
+                        
+                        replying_to NVARCHAR(50),
 
                         message NVARCHAR(MAX) NOT NULL
 
@@ -334,16 +336,11 @@ app.post("/create_tables",async function(req, res){
 
                     EXEC sp_executesql @SQL;`);
 
-        // In case of insertion or deletion queries, no recordset is returned
-        res.json({
-            okay:true
-        })
-
     }
     catch(err)
     {
         console.error(err);
-        res.json(
+        return res.json(
             {
                 okay:false,
                 message:`Unable to create room table for room_id: ${chatroom_id}`
@@ -441,6 +438,8 @@ app.post("/load_chats", async function(req, res){
         })
     }
 });
+
+
 
 async function rollbackMemberCount(chatroom_id){
 
@@ -602,6 +601,96 @@ app.post("/remove_member", async function(req, res){
                 okay:false,
                 message:"Server Error"
             })
+    }
+});
+
+
+app.post("/upload_chat", async function(req, res){
+
+    console.log(req.body);
+
+        const {
+        room_id,
+        sender,
+        notif = "none",
+        replying = false,
+        replying_to = "none",
+        deleted = false,
+        message
+    } = req.body;
+
+    console.log(room_id);
+
+    try{
+
+        const room_name = `Room_${room_id}`;
+
+        const result = await pool.request()
+            .input("room_name", sql.NVarChar, room_name)
+            .input("sender", sql.NVarChar, sender)
+            .input("notif", sql.NVarChar, notif)
+            .input("replying", sql.Bit, replying)
+            .input("replying_to", sql.NVarChar, replying_to)
+            .input("deleted", sql.Bit, deleted)
+            .input("message", sql.NVarChar(sql.MAX), message)
+            .query(`
+                DECLARE @SQL NVARCHAR(MAX);
+
+                SET @SQL = '
+                    INSERT INTO ' + QUOTENAME(@room_name) + '
+                    (
+                        sender,
+                        notif,
+                        sent_at,
+                        replying,
+                        replying_to,
+                        deleted,
+                        message
+                    )
+                    VALUES
+                    (
+                        @sender,
+                        @notif,
+                        GETDATE(),
+                        @replying,
+                        @replying_to,
+                        @deleted,
+                        @message
+                    );
+                ';
+
+                EXEC sp_executesql
+                    @SQL,
+                    N'
+                        @sender NVARCHAR(100),
+                        @notif NVARCHAR(255),
+                        @replying BIT,
+                        @replying_to NVARCHAR(255),
+                        @deleted BIT,
+                        @message NVARCHAR(MAX)
+                    ',
+                    @sender=@sender,
+                    @notif=@notif,
+                    @replying=@replying,
+                    @replying_to=@replying_to,
+                    @deleted=@deleted,
+                    @message=@message;
+            `);
+
+        res.json({
+            okay: true
+        });
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        res.json({
+            okay: false,
+            message: err.message
+        });
+
     }
 });
 

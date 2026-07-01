@@ -165,3 +165,7 @@ Also:
 
 Also, now that you are using await, this function must be defined
 as async
+
+
+16. Getting the value from a class
+const message = document.querySelector(".typing_box").value.trim();
