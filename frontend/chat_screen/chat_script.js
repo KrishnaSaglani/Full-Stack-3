@@ -5,6 +5,8 @@ const API_URL = 'http://localhost:3000';
 // for loading chats via polling
 let polling_Interval = null;
 let last_chat_id =0;
+let scrolled_up = 0;
+let menu_open = 0;
 
 function startPolling(chatroom_id){
 
@@ -99,7 +101,16 @@ async function leave_chat()
     document.getElementById("leaveButton").style.display ="none";
     // remove room title
     document.getElementById("room_title").innerText ="";
-    document.querySelector(".container_right").classList.remove("chat_open");
+
+    // clearing the chat area
+    const chatArea = document.querySelector(".container_right");
+    chatArea.classList.remove("chat_open");
+    // remove all old stuff
+    const elements = chatArea.querySelectorAll(".message, .chat_menu");
+    for(const element of elements)
+    {
+        element.remove();
+    }
 
 
     // stop polling the chat
@@ -202,6 +213,8 @@ const load_chats_URL = API_URL + "/load_chats";
 async function load_chats(chatroom_id, last_chat_id){
 
         try{
+
+
             console.log("Loading chats....");
             //load all chats wrt the given room
 
@@ -222,9 +235,6 @@ async function load_chats(chatroom_id, last_chat_id){
                 const new_chats = result.new_chats;
                 const chatArea = document.querySelector(".container_right");
                 const user = localStorage.getItem('storedUser');
-
-
-                
 
                 for(const chat of new_chats)
                 {
@@ -287,16 +297,28 @@ async function load_chats(chatroom_id, last_chat_id){
                             <button class="edit_chat" onclick="edit_chat(${chat.chat_id})">Edit</button>
                             <button class="replying" onclick="reply_chat(${chat.chat_id})">Reply</button>
                             `
-                            // add it to message bar itself!!
+                            
+                            const menus = document.querySelectorAll(".chat_menu");
+                            for(const menu of menus)
+                            {
+                                menu.remove();
+                            }
+                            
                             message.appendChild(menu);
                         });
                     message.appendChild(options);
                     message.appendChild(sender);
                     message.appendChild(text);
                     chatArea.appendChild(message);
-
                 }
 
+                // lets scroll up!
+                if(scrolled_up===0)
+                {
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                    scrolled_up=1;
+                }
+                
 
                 return last_chat_id;
             }
@@ -319,6 +341,9 @@ async function load_chats(chatroom_id, last_chat_id){
 const upload_chats_URL = API_URL + "/upload_chat";
 async function send_chat()
 {
+    scrolled_up = 0;
+    
+
     // first select a room!
     const current_room_string = localStorage.getItem('current_room');
     // This is always string!!!
@@ -328,6 +353,7 @@ async function send_chat()
     // finding the message itself
     const msgBox = document.querySelector(".typing_box");
     const chatArea = document.getElementById("chats");
+    
     const typed = msgBox.value.trim();
     if(typed=="")return;
 
@@ -384,6 +410,10 @@ typingBox.addEventListener("keydown", function (event) {
 });
 
 
-
-
+// turn off all extra menus
+document.addEventListener("click", function(){
+    document.querySelectorAll(".chat_menu").forEach(menu => {
+        menu.remove();
+    });
+});
 

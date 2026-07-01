@@ -11,7 +11,6 @@ function retry(){
 
 
 const create_tables_URL = "http://localhost:3000/create_tables";
-
 async function create_tables(chatroom_id, name){
 
     try{
@@ -30,7 +29,8 @@ async function create_tables(chatroom_id, name){
         if(result.okay)
         {
             console.log(`Tables for Room: ${name} successfully created`);
-            return
+
+            window.location.href=`../browse_screen/browse.html`;
         }
         else
         {
@@ -49,34 +49,35 @@ async function create_tables(chatroom_id, name){
 
 
 const create_room_URL = "http://localhost:3000/create_room";
-
-
 async function create_room(){
-    const creator = localStorage.getItem('storedUser');
-    const name = document.getElementById("name").value;
-    const description = document.getElementById("description").value;
-    let max_members = document.getElementById("max_members").value;
-    // max_members is a variable!!
-    const rule = document.getElementById("rule").value;
-    const activeFor = Number(document.getElementById("active_for").value);
 
-    if (!name.trim()) {
-            alert("Room name cannot be empty.");
-            return;
-    }
-    if (!description.trim()) {
-            alert("Kindly Fill Room Description.");
-            return;
-    }
-    if (!activeFor) {
-            alert("Kindly fill Activation Duration.");
-            return;
-    }
+    // getting all the fields
+        const creator = localStorage.getItem('storedUser');
+        const name = document.getElementById("name").value;
+        const description = document.getElementById("description").value;
+        let max_members = document.getElementById("max_members").value;
+        // max_members is a variable!!
+        const rule = document.getElementById("rule").value;
+        const activeFor = Number(document.getElementById("active_for").value);
 
-    if(!max_members){
-        alert("Default maximum members is set at 20.");
-        max_members = 20;
-    }
+    // giving required alerts
+        if (!name.trim()) {
+                alert("Room name cannot be empty.");
+                return;
+        }
+        if (!description.trim()) {
+                alert("Kindly Fill Room Description.");
+                return;
+        }
+        if (!activeFor) {
+                alert("Kindly fill Activation Duration.");
+                return;
+        }
+
+        if(!max_members){
+            alert("Default maximum members is set at 20.");
+            max_members = 20;
+        }
     
     // Always disable button while you are sending fetch request to backend
     const create_button = document.querySelector(".create");
@@ -111,14 +112,14 @@ async function create_room(){
         if(result.okay)
         {   
             show_result.innerHTML=`
-            <h1 class = "success">Room Created Successfully</h1>
+            <h1 class = "success">Confirm Chatroom Data...</h1>
             <button class = "proceed" onclick="create_tables(${result.chatroom_id}, ${result.name})"> Proceed to Create... </button>
             <div class="details"> 
-                Chatroom name: ${name},
-                Description: ${description},
-                Max_members: ${max_members},
-                Rule: ${rule},
-                Active For: ${activeFor}
+                Chatroom name: ${name},<br>
+                Description: ${description},<br>
+                Max_members: ${max_members},<br?
+                Rule: ${rule},<br>
+                Active For: ${activeFor}<br>
             </div>
             `;
         }
@@ -140,8 +141,5 @@ async function create_room(){
     finally{
         create_button.disabled = false;
     }
-
-
-    
 
 }
