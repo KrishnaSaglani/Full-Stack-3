@@ -158,14 +158,43 @@ Also:
 
 15. Importance of await:
 
-// DONT forget to do await!!! Or execution will simply move ahead!!
-        await remove_member(current_room.chatroom_id);
-        localStorage.removeItem("current_room");
-// without await this will give error!!
+    // DONT forget to do await!!! Or execution will simply move ahead!!
+            await remove_member(current_room.chatroom_id);
+            localStorage.removeItem("current_room");
+    // without await this will give error!!
 
-Also, now that you are using await, this function must be defined
-as async
+    Also, now that you are using await, this function must be defined
+    as async
 
 
-16. Getting the value from a class
-const message = document.querySelector(".typing_box").value.trim();
+    16. Getting the value from a class
+    const message = document.querySelector(".typing_box").value.trim();
+
+16. Javascript division fetching:
+
+            const messages = document.querySelectorAll(".message");
+
+            for(const message of messages)
+            {
+                const id = message.querySelector("id");
+                if(id.innerText === chat_id.toString())
+                {
+                    ...
+                }
+
+            }
+
+
+17. .innerText vs .value:
+
+
+
+18. String to Int converion:
+
+            x->string
+            Number(x) ->Int
+
+            x->int
+            x.toString()->string
+            JSON.stringify(x) ->string
+            

@@ -7,6 +7,15 @@ let polling_Interval = null;
 let last_chat_id =0;
 let scrolled_up = 0;
 let menu_open = 0;
+let reply_edit_header_open = false;
+let replying = false;
+let reply_edit_chat_id = 0;
+
+
+
+
+
+
 
 function startPolling(chatroom_id){
 
@@ -36,6 +45,12 @@ function stopPolling(){
 
 
 
+
+
+
+
+
+
 //browse chatrooms button
 async function browse_chatroom_page(){
 
@@ -56,6 +71,12 @@ async function create_chatroom_page(){
 }
 
 
+
+
+
+
+
+
 // open chat
 function open_chat()
 {
@@ -71,6 +92,11 @@ function open_chat()
     // make required stuff visible!
     document.getElementById("leaveButton").style.display ="flex";
     document.getElementById("chat_input_area").style.display ="flex";
+
+    // start with removing the header initially!
+    document.querySelector(".reply_edit_header").style.display ="none";
+
+    chat_input_area.classList.add("active");
     document.querySelector(".container_right").classList.add("chat_open");
 
     // adding title
@@ -136,6 +162,13 @@ function logout(){
     leave_chat();
     window.location.href = "../login_screen/login.html";
 }
+
+
+
+
+
+
+
 
 
 async function add_member(chatroom_id)
@@ -208,13 +241,239 @@ async function remove_member(chatroom_id)
     }
 }
 
+
+
+
+
+
+
+const delete_chat_URL = API_URL + "/delete_chat";
+async function delete_chat(chat_id, room_id)
+{
+    try{
+        const response = await fetch(delete_chat_URL,{
+            method:'POST',
+            headers:{'Content-Type':'Application/json'},
+            body: JSON.stringify({
+                room_id:room_id,
+                chat_id:chat_id
+            })
+        });
+
+        const result = await response.json();
+
+        if(result.okay)
+        {
+            const messages = document.querySelectorAll(".message");
+
+            for(const message of messages)
+            {
+
+                const id = message.querySelector(".id");
+                if(id && id.innerText === chat_id.toString())
+                {
+                    const text = message.querySelector(".text");
+                    text.innerText = "This message was deleted.";
+                    message.classList.add("deleted");
+
+
+                    // also remove the options button from this now!!
+                    const options = message.querySelector(".options_button");
+                    options.remove();
+                    break;
+                }
+
+            }
+
+        }
+        else{
+            console.log("Contacted backend but unable to delete from db");
+            console.log(result.message);
+        }
+
+    }
+    catch(err)
+    {
+        console.log(err);
+        console.log("Server Error");
+    }
+}
+
+async function edit_chat(chat_id, room_id, message)
+{
+    // first get the edited text from the user's typing box.
+    // creating a reply_edit heador for user to know whats up
+    const reply_edit_header = document.querySelector(".reply_edit_header");
+
+    // dont forget to make this false later
+    reply_edit_header_open= true;
+
+    const reply_edit_info = document.createElement("div");
+    reply_edit_info.classList.add("reply_edit_info");
+
+    const reply_edit_title = document.createElement("div");
+    reply_edit_title.classList.add("reply_edit_title");
+    reply_edit_title.innerText ="Editing..";
+
+    const reply_edit_preview = document.createElement("div");
+    reply_edit_preview.classList.add("reply_edit_preview");
+    reply_edit_preview.innerText =message;
+
+    const reply_edit_close = document.createElement("button");
+    reply_edit_close.classList.add("reply_edit_close");
+    reply_edit_close.innerText ="✕";
+    reply_edit_close.addEventListener("click", function(event){
+        event.stopPropagation();
+        reply_edit_header.style.display ="none";
+        reply_edit_header_open = false;
+    });
+
+    // now appending everything
+    // first remove things already in here
+    reply_edit_header.innerHTML = "";
+
+    reply_edit_info.appendChild(reply_edit_title);
+    reply_edit_info.appendChild(reply_edit_preview);
+    reply_edit_header.appendChild(reply_edit_info);
+    reply_edit_header.appendChild(reply_edit_close);
+
+    // display header
+    reply_edit_header.style.display = "flex";
+    chat_input_area.classList.add("active");
+
+    console.log(`Editing message: ${message}`);
+
+    // finally saving the reply_edit_chat_id
+    reply_edit_chat_id = chat_id;
+
+    // rest is handled in send_chat() itself
+}
+
+async function reply_chat(chat_id, room_id, message, sender)
+{
+    // first get the edited text from the user's typing box.
+    // creating a reply_edit heador for user to know whats up
+    const reply_edit_header = document.querySelector(".reply_edit_header");
+
+
+    replying = true;
+
+    // dont forget to make this false later
+    reply_edit_header_open= true;
+
+    const reply_edit_info = document.createElement("div");
+    reply_edit_info.classList.add("reply_edit_info");
+
+    const reply_edit_title = document.createElement("div");
+    reply_edit_title.classList.add("reply_edit_title");
+    reply_edit_title.innerText ="Replying..";
+
+    const reply_edit_preview = document.createElement("div");
+    reply_edit_preview.classList.add("reply_edit_preview");
+    reply_edit_preview.innerText ="("+sender+") "  + message;
+
+    const reply_edit_close = document.createElement("button");
+    reply_edit_close.classList.add("reply_edit_close");
+    reply_edit_close.innerText ="✕";
+    reply_edit_close.addEventListener("click", function(event){
+        event.stopPropagation();
+        reply_edit_header.style.display ="none";
+        reply_edit_header_open = false;
+    });
+
+    // now appending everything
+    // first remove things already in here
+    reply_edit_header.innerHTML = "";
+
+    reply_edit_info.appendChild(reply_edit_title);
+    reply_edit_info.appendChild(reply_edit_preview);
+    reply_edit_header.appendChild(reply_edit_info);
+    reply_edit_header.appendChild(reply_edit_close);
+
+    // display header
+    reply_edit_header.style.display = "flex";
+    chat_input_area.classList.add("active");
+
+    console.log(`Replying to message: ${message}`);
+
+    // finally saving the reply_edit_chat_id
+    reply_edit_chat_id = chat_id;
+
+    // rest is handled in send_chat() itself
+}
+
+
+
+const load_edited_chat_URL = API_URL + "/load_edited_chat";
+async function load_edited_chat(chatroom_id,edited_id)
+{
+        if(edited_id != 0)
+        {
+            console.log(`Loading single chat having id: ${edited_id}....`);
+            //load all chats wrt the given room
+            try{
+
+                        const response = await fetch(load_edited_chat_URL,{
+                        method:'POST',
+                        headers:{'Content-Type':'application/json'},
+                        body:JSON.stringify({
+                            chatroom_id:chatroom_id,
+                            edited_id:edited_id
+                        })
+                    });
+
+                    const result = await response.json();
+
+
+                    if(result.okay)
+                    {
+                        const edited_chat = result.new_chats[0];
+                        // already existing messages
+                        const messages= document.querySelectorAll(".message");
+
+                            for(const msg of messages)
+                            {
+                                const id = msg.querySelector(".id");
+                                if(Number(id.innerText) === edited_id)
+                                {
+                                    // loading this single message in different way
+                                    msg.classList.add("edited");
+
+                                    // finally loading the edited text
+                                    if(!edited_chat.deleted)
+                                    {
+                                        const text = msg.querySelector(".text");
+                                        text.innerText = edited_chat.message;
+                                    }
+
+                                    // edited chat successfully loaded
+                                    break;
+
+                                }
+
+
+                            }
+
+                    }
+                    
+                    return;
+
+            }
+            catch(err)
+            {
+                console.error(err);
+            }
+            
+        }
+}
+
+
 // loading all chats
 const load_chats_URL = API_URL + "/load_chats";
-async function load_chats(chatroom_id, last_chat_id){
 
+async function load_chats(chatroom_id, last_chat_id, edited_id){
+        // load regular chats
         try{
-
-
             console.log("Loading chats....");
             //load all chats wrt the given room
 
@@ -236,6 +495,7 @@ async function load_chats(chatroom_id, last_chat_id){
                 const chatArea = document.querySelector(".container_right");
                 const user = localStorage.getItem('storedUser');
 
+
                 for(const chat of new_chats)
                 {
                     last_chat_id = chat.chat_id;
@@ -243,6 +503,12 @@ async function load_chats(chatroom_id, last_chat_id){
                     // creating a message element
                     const message = document.createElement("div");
                     message.classList.add('message');
+
+                    // adding id to the message also, so it can be edited or deleted later
+                    const id = document.createElement('div');
+                    id.classList.add('id');
+                    id.innerText = chat.chat_id;
+                    id.style.display = "none";
 
                     // creating a sender element,child of message
                     const sender = document.createElement("div");
@@ -269,7 +535,7 @@ async function load_chats(chatroom_id, last_chat_id){
                     if(chat.deleted)
                     {
                         message.classList.add('deleted');
-                        text.innerText = "..deleted";
+                        text.innerText = "This message was deleted.";
                     }
                     else
                     {
@@ -283,8 +549,20 @@ async function load_chats(chatroom_id, last_chat_id){
                     }
 
 
+                    // checking if message is replying to someone
+                    const replying_to = document.createElement("div");
+                    if(chat.replying)
+                    {
+                        replying_to.classList.add("replying_to");
+                        replying_to.innerText = chat.replying_to;
+                        message.classList.add("replying");
+
+                    }
+
+
                     // creating an options button used to delete, edit or reply
                     const options = document.createElement("button");
+                    options.classList.add("options_button");
                     options.innerText = "⋮"; 
                     options.addEventListener("click", async function(event)
                         {
@@ -293,9 +571,9 @@ async function load_chats(chatroom_id, last_chat_id){
                             menu.classList.add("chat_menu");
 
                             menu.innerHTML = `
-                            <button class="delete_chat" onclick="delete_chat(${chat.chat_id})">Delete</button>
-                            <button class="edit_chat" onclick="edit_chat(${chat.chat_id})">Edit</button>
-                            <button class="replying" onclick="reply_chat(${chat.chat_id})">Reply</button>
+                            <button class="delete_chat" onclick="delete_chat(${chat.chat_id},${chatroom_id})">Delete</button>
+                            <button class="edit_chat" onclick="edit_chat(${chat.chat_id}, ${chatroom_id}, '${chat.message}')">Edit</button>
+                            <button class="replying" onclick="reply_chat(${chat.chat_id}, ${chatroom_id}, '${chat.message}', '${chat.sender}')">Reply</button>
                             `
                             
                             const menus = document.querySelectorAll(".chat_menu");
@@ -306,10 +584,14 @@ async function load_chats(chatroom_id, last_chat_id){
                             
                             message.appendChild(menu);
                         });
-                    message.appendChild(options);
+
+                    if(!chat.deleted){message.appendChild(options);}
+                    if(chat.replying){message.appendChild(replying_to);}
                     message.appendChild(sender);
                     message.appendChild(text);
+                    message.appendChild(id);
                     chatArea.appendChild(message);
+                    
                 }
 
                 // lets scroll up!
@@ -339,11 +621,10 @@ async function load_chats(chatroom_id, last_chat_id){
 
 
 const upload_chats_URL = API_URL + "/upload_chat";
+const edit_chat_URL = API_URL + "/edit_chat";
 async function send_chat()
 {
     scrolled_up = 0;
-    
-
     // first select a room!
     const current_room_string = localStorage.getItem('current_room');
     // This is always string!!!
@@ -355,10 +636,147 @@ async function send_chat()
     const chatArea = document.getElementById("chats");
     
     const typed = msgBox.value.trim();
-    if(typed=="")return;
 
     // finding the message sender's name
     const sender = localStorage.getItem('storedUser');
+    
+
+    // edit mode
+    if(reply_edit_header_open && !replying)
+    {
+        const reply_edit_header = document.querySelector(".reply_edit_header");
+        
+        // if nothing typed, close edit mode
+        if(typed=="")
+        {
+            reply_edit_header.style.display ="none";
+            reply_edit_header_open = false;
+            return;
+        }
+
+        // Also check if you are the sender or not!
+
+        const chat_id = reply_edit_chat_id;
+        const messages = document.querySelectorAll(".message");
+        for( const msg of messages)
+        {
+            const id = msg.querySelector(".id");
+            if(Number(id.innerText) === chat_id)
+            {
+                if (msg.querySelector(".sender")!=sender)
+                {
+                    console.log("Cannot edit other's messages");
+                    return;
+                }
+            }
+        }
+        
+    // time to actualy edit the message
+        
+        // first edit inside the database
+        try{
+                const response = await fetch(edit_chat_URL, {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({
+                    room_id:room_id,
+                    sender:sender,
+                    notif:"edited",
+                    replying: false,
+                    replying_to:"none",
+                    deleted:false,
+                    message:typed,
+                    chat_id:reply_edit_chat_id
+                })
+            });
+
+            const result = await response.json();
+
+            if(result.okay)
+            {
+                console.log("Edited successfully");
+                // then load this particular chat again
+                load_edited_chat(room_id, reply_edit_chat_id );
+
+
+                // now reset it all
+                    reply_edit_header.style.display = "none";
+                    reply_edit_header_open = false;
+                    reply_edit_chat_id = 0;
+
+                    msgBox.value = "";
+                    msgBox.focus();
+
+
+            }
+            else{
+                console.log("Unable to edit");
+            }
+
+        }
+        catch(err)
+        {
+            console.error(err);
+        }
+
+        return;
+    }
+
+    // reply Mode!
+    if(reply_edit_header_open && replying)
+    {
+        if(typed=="")return;
+        const reply_edit_preview = document.querySelector(".reply_edit_preview");
+        const replying_to = reply_edit_preview.innerText;
+        try{
+                const response = await fetch(upload_chats_URL, {
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({
+                        room_id:room_id,
+                        sender:sender,
+                        notif:"replying",
+                        replying: true,
+                        replying_to:replying_to,
+                        deleted:false,
+                        message:typed
+                    })
+                });
+
+                const result = await response.json();
+
+                if(result.okay)
+                {
+                    // reset these settings!
+                    reply_edit_header.style.display = "none";
+                    reply_edit_header_open = false;
+                    reply_edit_chat_id = 0;
+
+
+                    console.log(`Reply :${typed} sent to database successfully`);
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                    msgBox.value ="";
+                    msgBox.focus();
+                }
+                else
+                {
+                    console.log(`Unable to send message to db`);
+                }
+
+            }
+            catch(err)
+            {
+                console.log(err);
+            }
+
+            return;
+    }
+
+
+
+    
+    
+    if(typed=="")return;
 
     // doing the fetch request
     try{

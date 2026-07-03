@@ -8,6 +8,8 @@ Its basically going to involve:
 
     Thats it for today
 
+
+
 4. Populate the browse chatrooms page with all available chatrooms --done
 5. Differently label my chatrooms vs others' chatrooms  --done
 6. make an auto refresher for deleting old chatrooms.  --done
@@ -29,8 +31,15 @@ Its basically going to involve:
 
 14. Add member to tables whenever entering a room. Also remove member whenever leaving a room. --done
 15. Load the chats on entering the chatroom. --done
-16. Load every message sent by anyone into database.
+16. Load every message sent by anyone into database. --done
 17. Implement a smart polling system that retrieves NEW chats every 1-2 seconds. --done
 
 
-18. Implement 
+18. Fix UI bugs! --done
+18. Load 10 most trending Chatrooms onto sidebar.
+19. Create the Edit, Delete and Replying button functions.
+19. In create chatroom, only take integers as input for Max_members.
+
+
+
+20.Make application live using socket.io.

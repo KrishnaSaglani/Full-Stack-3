@@ -1,4 +1,4 @@
-```css
+
 /* =========================
    Basic Reset
 ========================= */
@@ -188,7 +188,7 @@ select option {
 }
 
 /* =========================
-   Back Button
+   Button
 ========================= */
 .back {
     align-self: flex-start;
@@ -311,4 +311,3 @@ select option {
         font-size: 1.6rem;
     }
 }
-```

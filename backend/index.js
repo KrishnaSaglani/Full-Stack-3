@@ -439,6 +439,49 @@ app.post("/load_chats", async function(req, res){
     }
 });
 
+app.post("/load_edited_chat", async function(req, res){
+    const{chatroom_id, edited_id} = req.body;
+    try{
+        const room_name = `Room_${chatroom_id}`;
+        const result = await pool.request()
+        .input("room_name", sql.NVarChar, room_name)
+        .input("edited_id", sql.Int, edited_id)
+        .query(`
+
+            DECLARE @SQL NVARCHAR(MAX);
+
+            SET @SQL = '
+            SELECT *
+            FROM ' + QUOTENAME(@room_name) + '
+            WHERE chat_id = @edited_id;
+            ';
+
+            EXEC sp_executesql
+                @SQL,
+                N'@edited_id  INT',
+                @edited_id = @edited_id;
+            
+            `);
+
+
+        res.json({
+            okay:true,
+            new_chats:result.recordset
+        })
+        
+    }
+    catch(err)
+    {
+        console.error(err);
+        res.json({
+            okay:false,
+            message:err.message
+        })
+    }
+});
+
+
+
 
 
 async function rollbackMemberCount(chatroom_id){
@@ -605,6 +648,8 @@ app.post("/remove_member", async function(req, res){
 });
 
 
+
+
 app.post("/upload_chat", async function(req, res){
 
     console.log(req.body);
@@ -693,6 +738,298 @@ app.post("/upload_chat", async function(req, res){
 
     }
 });
+
+app.post("/edit_chat", async function(req, res){
+
+    console.log(req.body);
+
+        const {
+        room_id,
+        sender,
+        notif = "none",
+        replying = false,
+        replying_to = "none",
+        deleted = false,
+        message,
+        chat_id
+    } = req.body;
+
+    console.log(room_id);
+
+    try{
+
+        const room_name = `Room_${room_id}`;
+
+        const result = await pool.request()
+            .input("room_name", sql.NVarChar, room_name)
+            .input("sender", sql.NVarChar, sender)
+            .input("notif", sql.NVarChar, notif)
+            .input("replying", sql.Bit, replying)
+            .input("replying_to", sql.NVarChar, replying_to)
+            .input("deleted", sql.Bit, deleted)
+            .input("message", sql.NVarChar(sql.MAX), message)
+            .input("chat_id",sql.Int,chat_id)
+            .query(`
+                DECLARE @SQL NVARCHAR(MAX);
+
+                SET @SQL = '
+                    UPDATE ' + QUOTENAME(@room_name) + '
+                    SET
+                        sender = @sender,
+                        notif = @notif,
+                        sent_at = GETDATE(),
+                        replying = @replying,
+                        deleted = @deleted,
+                        message = @message,
+                        replying_to = @replying_to
+                    WHERE chat_id = @chat_id;
+
+                    IF @@ROWCOUNT = 0
+                    BEGIN
+                        THROW 50013, ''Message not found.'', 1;
+                    END
+                ';
+
+                EXEC sp_executesql
+                    @SQL,
+                    N'
+                        @sender NVARCHAR(100),
+                        @notif NVARCHAR(100),
+                        @replying BIT,
+                        @deleted BIT,
+                        @message NVARCHAR(MAX),
+                        @replying_to NVARCHAR(100),
+                        @chat_id INT
+                    ',
+                    @sender = @sender,
+                    @notif = @notif,
+                    @replying = @replying,
+                    @deleted = @deleted,
+                    @message = @message,
+                    @replying_to = @replying_to,
+                    @chat_id = @chat_id;
+
+            `);
+
+            console.log(`Edited chat with : ${message}`);
+        res.json({
+            okay: true
+        });
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        res.json({
+            okay: false,
+            message: err.message
+        });
+
+    }
+});
+
+
+
+app.post("/delete_chat", async function(req, res){
+
+    console.log(req.body);
+
+        const {
+        room_id,
+        chat_id
+    } = req.body;
+
+    console.log(`Deleting chat from room_id ${room_id}`);
+
+    try{
+
+        const room_name = `Room_${room_id}`;
+
+        const result = await pool.request()
+            .input("room_name", sql.NVarChar, room_name)
+            .input("chat_id", sql.Int, chat_id)
+            .query(`
+                DECLARE @SQL NVARCHAR(MAX);
+
+                SET @SQL = '
+                    UPDATE ' + QUOTENAME(@room_name) + '
+                    SET
+                        deleted = 1,
+                        message = ''''
+                    WHERE chat_id = @chat_id;
+
+                    IF @@ROWCOUNT = 0
+                    BEGIN
+                        THROW 50012, ''Message not found.'', 1;
+                    END
+                ';
+
+                EXEC sp_executesql
+                    @SQL,
+                    N'@chat_id INT',
+                    @chat_id = @chat_id;
+            `);
+
+        res.json({
+            okay: true
+        });
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        if(err.number === 50012)
+        {
+            return res.json({
+                okay: false,
+                message: "Message not found."
+            });
+        }
+
+
+        return res.json({
+            okay: false,
+            message: err.message
+        });
+
+    }
+});
+
+app.post("/edit_chat", async function(req, res){
+
+    console.log(req.body);
+
+        const {
+        room_id,
+        chat_id
+    } = req.body;
+
+    console.log(`Deleting chat from room_id ${room_id}`);
+
+    try{
+
+        const room_name = `Room_${room_id}`;
+
+        const result = await pool.request()
+            .input("room_name", sql.NVarChar, room_name)
+            .input("chat_id", sql.Int, chat_id)
+            .query(`
+                DECLARE @SQL NVARCHAR(MAX);
+
+                SET @SQL = '
+                    UPDATE ' + QUOTENAME(@room_name) + '
+                    SET
+                        deleted = 1,
+                        message = ''''
+                    WHERE chat_id = @chat_id;
+
+                    IF @@ROWCOUNT = 0
+                    BEGIN
+                        THROW 50012, ''Message not found.'', 1;
+                    END
+                ';
+
+                EXEC sp_executesql
+                    @SQL,
+                    N'@chat_id INT',
+                    @chat_id = @chat_id;
+            `);
+
+        res.json({
+            okay: true
+        });
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        if(err.number === 50012)
+        {
+            return res.json({
+                okay: false,
+                message: "Message not found."
+            });
+        }
+
+
+        return res.json({
+            okay: false,
+            message: err.message
+        });
+
+    }
+});
+
+app.post("/reply_chat", async function(req, res){
+
+    console.log(req.body);
+
+        const {
+        room_id,
+        chat_id
+    } = req.body;
+
+    console.log(`Deleting chat from room_id ${room_id}`);
+
+    try{
+
+        const room_name = `Room_${room_id}`;
+
+        const result = await pool.request()
+            .input("room_name", sql.NVarChar, room_name)
+            .input("chat_id", sql.Int, chat_id)
+            .query(`
+                DECLARE @SQL NVARCHAR(MAX);
+
+                SET @SQL = '
+                    UPDATE ' + QUOTENAME(@room_name) + '
+                    SET
+                        deleted = 1,
+                        message = ''''
+                    WHERE chat_id = @chat_id;
+
+                    IF @@ROWCOUNT = 0
+                    BEGIN
+                        THROW 50012, ''Message not found.'', 1;
+                    END
+                ';
+
+                EXEC sp_executesql
+                    @SQL,
+                    N'@chat_id INT',
+                    @chat_id = @chat_id;
+            `);
+
+        res.json({
+            okay: true
+        });
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        if(err.number === 50012)
+        {
+            return res.json({
+                okay: false,
+                message: "Message not found."
+            });
+        }
+
+
+        return res.json({
+            okay: false,
+            message: err.message
+        });
+
+    }
+});
+
+
 
 
 const PORT = 3000;
