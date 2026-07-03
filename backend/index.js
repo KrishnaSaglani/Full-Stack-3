@@ -1031,6 +1031,21 @@ app.post("/reply_chat", async function(req, res){
 
 
 
+app.get('/trending_rooms', async function (req, res){
+
+    const result = await pool.request()
+                    .query(`select top 10 * from Chatrooms
+                        where current_members<max_members
+                        order by current_members desc`);
+
+    res.json(
+        {
+            okay:true,
+            trending:result.recordset
+        }
+    );
+
+});
 
 const PORT = 3000;
 app.listen(PORT, () => {

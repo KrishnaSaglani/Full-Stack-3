@@ -1,0 +1,70 @@
+Priority 1
+    🟢 Socket.IO (replace polling)
+    Online users
+    Typing...
+    Seen/Delivered ticks
+
+
+Priority 2
+    Edit only your own messages
+    Delete only your own messages
+    Delete for Everyone vs Delete for Me
+    Better reply preview (show sender + first line)
+
+
+Priority 3
+    Emojis 😀
+    Image sending
+    File sending
+    Drag & Drop
+    Markdown
+    Code blocks
+
+
+Priority 4
+    Search messages
+    Pin messages
+    Star messages
+    Mention users (@Krishna)
+    Notifications
+
+
+
+
+
+
+
+    
+✔ Login/Register
+✔ Chatrooms
+✔ Polling
+✔ Delete
+✔ Edit
+✔ Reply
+
+⬇
+
+⭐ Socket.IO (Live Chats)
+
+⬇
+
+⭐ Host backend on your laptop
+(using a public tunnel)
+
+⬇
+
+⭐ Deploy frontend
+(Vercel or GitHub Pages)
+
+⬇
+
+⭐ Deploy backend permanently
+(Railway / Render / Azure)
+
+⬇
+
+⭐ Domain name + HTTPS
+
+⬇
+
+⭐ Production-ready KSChat 🚀

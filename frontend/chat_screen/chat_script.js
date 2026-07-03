@@ -404,6 +404,12 @@ async function reply_chat(chat_id, room_id, message, sender)
 
 
 
+
+
+
+
+
+
 const load_edited_chat_URL = API_URL + "/load_edited_chat";
 async function load_edited_chat(chatroom_id,edited_id)
 {
@@ -471,7 +477,7 @@ async function load_edited_chat(chatroom_id,edited_id)
 // loading all chats
 const load_chats_URL = API_URL + "/load_chats";
 
-async function load_chats(chatroom_id, last_chat_id, edited_id){
+async function load_chats(chatroom_id, last_chat_id){
         // load regular chats
         try{
             console.log("Loading chats....");
@@ -564,17 +570,34 @@ async function load_chats(chatroom_id, last_chat_id, edited_id){
                     const options = document.createElement("button");
                     options.classList.add("options_button");
                     options.innerText = "⋮"; 
+
+                
                     options.addEventListener("click", async function(event)
                         {
                             event.stopPropagation();
                             const menu = document.createElement("div");
                             menu.classList.add("chat_menu");
 
-                            menu.innerHTML = `
-                            <button class="delete_chat" onclick="delete_chat(${chat.chat_id},${chatroom_id})">Delete</button>
-                            <button class="edit_chat" onclick="edit_chat(${chat.chat_id}, ${chatroom_id}, '${chat.message}')">Edit</button>
-                            <button class="replying" onclick="reply_chat(${chat.chat_id}, ${chatroom_id}, '${chat.message}', '${chat.sender}')">Reply</button>
-                            `
+                            if(chat.sender === user)
+                            {
+                                //only user can delete/ edit his OWN stuff!
+                                    menu.innerHTML = `
+                                        <button class="delete_chat" onclick="delete_chat(${chat.chat_id},${chatroom_id})">Delete</button>
+                                        <button class="edit_chat" onclick="edit_chat(${chat.chat_id}, ${chatroom_id}, '${chat.message}')">Edit</button>
+                                        <button class="replying" onclick="reply_chat(${chat.chat_id}, ${chatroom_id}, '${chat.message}', '${chat.sender}')">Reply</button>
+                                        `
+                                
+                            }
+                            else
+                            {
+
+                                menu.innerHTML = `
+                                    <button class="replying" onclick="reply_chat(${chat.chat_id}, ${chatroom_id}, '${chat.message}', '${chat.sender}')">Reply</button>
+                                    `
+                              
+                            }
+
+                            
                             
                             const menus = document.querySelectorAll(".chat_menu");
                             for(const menu of menus)
@@ -620,6 +643,14 @@ async function load_chats(chatroom_id, last_chat_id, edited_id){
 }
 
 
+
+
+
+
+
+
+
+
 const upload_chats_URL = API_URL + "/upload_chat";
 const edit_chat_URL = API_URL + "/edit_chat";
 async function send_chat()
@@ -663,9 +694,19 @@ async function send_chat()
             const id = msg.querySelector(".id");
             if(Number(id.innerText) === chat_id)
             {
-                if (msg.querySelector(".sender")!=sender)
+                const senderName = msg.querySelector(".sender").innerText;
+
+                if (senderName != "You")
                 {
-                    console.log("Cannot edit other's messages");
+                    alert("Cannot edit other's messages");
+
+                    // reset everything
+                    reply_edit_header.style.display = "none";
+                    reply_edit_header_open = false;
+                    reply_edit_chat_id = 0;
+
+                    msgBox.value = "";
+                    msgBox.focus();
                     return;
                 }
             }
@@ -700,6 +741,7 @@ async function send_chat()
 
 
                 // now reset it all
+                
                     reply_edit_header.style.display = "none";
                     reply_edit_header_open = false;
                     reply_edit_chat_id = 0;
@@ -748,6 +790,7 @@ async function send_chat()
                 if(result.okay)
                 {
                     // reset these settings!
+                    const reply_edit_header = document.querySelector(".reply_edit_header");
                     reply_edit_header.style.display = "none";
                     reply_edit_header_open = false;
                     reply_edit_chat_id = 0;
@@ -757,6 +800,7 @@ async function send_chat()
                     chatArea.scrollTop = chatArea.scrollHeight;
                     msgBox.value ="";
                     msgBox.focus();
+                    replying = false;
                 }
                 else
                 {
@@ -815,6 +859,143 @@ async function send_chat()
     }
 
 }
+
+
+
+
+    const trending_rooms_URL = API_URL + "/trending_rooms";
+    async function Trending_Rooms()
+    {
+        const roomsArea = document.querySelector(".container_left");
+        // Always clear before appending new stuff
+        roomsArea.innerHTML="";
+
+
+        const trend_title = document.createElement("div");
+        trend_title.classList.add("trend_title");
+        trend_title.innerText = "Top 10 Rooms..."
+        roomsArea.appendChild(trend_title);
+
+        const sender = localStorage.getItem('storedUser');
+
+        
+
+        try{
+            const response = await fetch(trending_rooms_URL,{
+                method:'GET'
+            });
+
+            const result = await response.json();
+
+
+            if(result.okay)
+            {
+                // set last_chat_id at 0
+                
+                console.log(`Trending rooms accessed successfully`);
+                const trending = result.trending;
+
+
+                for(const room of trending)
+                {
+                    const new_room = document.createElement("button");
+                    new_room.classList.add("room_card");
+
+                    const title = document.createElement("div");
+                    title.classList.add("title");
+                    title.innerText = room.name;
+
+                    const members= document.createElement("div");
+                    members.classList.add("members");
+                    members.innerText = room.current_members + "/" + room.max_members;
+
+                    // check the sender
+                    if(room.creator === sender)
+                    {
+                        new_room.classList.add("my_trending");
+                    }
+                    // Extra details
+                    const details = document.createElement("div");
+                    const details_button = document.createElement("button");
+                    details_button.innerText = "Details";
+
+                    details.classList.add("details");
+                    const created = new Date(room.date_created);
+                        const expiry = new Date(created);
+                        expiry.setDate(expiry.getDate() + room.active_for);
+
+                        const now = new Date();
+                        // current date
+
+                        const diff = expiry - now;
+
+                        const days = Math.floor(diff/(1000*60*60*24));
+                        const hours = Math.floor(
+                            (diff % (1000 * 60 * 60 * 24)) /
+                            (1000 * 60 * 60)
+                        );
+
+
+                        let expanded = false;
+                    details_button.addEventListener("click", async function(event){
+                        event.stopPropagation();
+
+                        if(!expanded)
+                        {
+                            details.innerHTML=`
+                            Description: ${room.description} <br>
+                            Rule: ${room.rule}<br>
+                            Active for: ${days}d, ${hours}h
+                            `;
+
+                            expanded =true;
+                        }
+                        else
+                        {
+                            details.innerText = "";
+                            expanded = false;
+                        }
+
+                        
+                    })
+
+                    details.appendChild(details_button);
+
+                    new_room.appendChild(title);
+                    new_room.appendChild(members);
+                    new_room.appendChild(details);
+
+                    new_room.addEventListener("click",async function(event){
+                        event.stopPropagation();
+                        
+
+                        // first leave old chat then enter new chat!!
+                        await leave_chat();
+                        localStorage.setItem("current_room", JSON.stringify(room));
+                        last_chat_id =0;
+                        await open_chat();
+                    });
+
+
+                    roomsArea.appendChild(new_room);
+
+                }
+
+            }
+            
+            
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+
+    }
+    Trending_Rooms();
+
+
+
+    
 
 
 // we want to click send button whenever enter is pressed!

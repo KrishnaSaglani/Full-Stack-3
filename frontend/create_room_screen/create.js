@@ -78,7 +78,23 @@ async function create_room(){
             alert("Default maximum members is set at 20.");
             max_members = 20;
         }
-    
+        else if(!Number.isInteger(max_members))
+        {
+            alert("Maximum members must be an integer.");
+            return;
+        }
+        if(max_members <= 0)
+        {
+            alert("Maximum members must be greater than 0.");
+            return;
+        }
+
+        if(max_members > 100)
+        {
+            alert("Maximum members cannot exceed 100.");
+            return;
+        }
+            
     // Always disable button while you are sending fetch request to backend
     const create_button = document.querySelector(".create");
     create_button.disabled = true;

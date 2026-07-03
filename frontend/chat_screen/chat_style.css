@@ -308,6 +308,127 @@ body {
     border-color: rgba(96, 165, 250, 0.4);
 }
 
+.room_card{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+
+    padding:15px;
+    margin-bottom:15px;
+
+    border:none;
+    border-radius:12px;
+
+    background:#202840;
+
+    cursor:pointer;
+
+    transition:0.25s;
+}
+
+.room_card:hover{
+    background:#29385a;
+    transform:translateY(-2px);
+}
+.trend_title{
+    color: white;
+
+    font-size: 26px;
+    font-weight: 700;
+
+    margin-bottom: 20px;
+    margin-top: 10px;
+
+    text-align: center;
+
+    letter-spacing: 1px;
+
+    padding-bottom: 10px;
+
+    border-bottom: 2px solid rgba(79, 124, 255, 0.5);
+}
+
+.title{
+    font-size:22px;
+    font-weight:bold;
+    color:white;
+
+    margin-bottom:8px;
+}
+
+.members{
+    color:#66d9ff;
+    font-size:15px;
+
+    margin-bottom:10px;
+}
+
+.details{
+
+    color:#d8d8d8;
+    font-size:14px;
+
+    line-height:1.5;
+
+}
+
+.details_button{
+
+    padding:6px 12px;
+
+    border:none;
+    border-radius:8px;
+
+    background:#4f7cff;
+
+    color:white;
+
+    cursor:pointer;
+
+    margin-bottom:10px;
+
+    transition:.2s;
+}
+
+.details_button:hover{
+
+    background:#7295ff;
+
+}
+
+.my_trending::before{
+    content: "Your Room";
+
+    position: absolute;
+    top: 10px;
+    right: 12px;
+
+    padding: 4px 8px;
+
+    background: #2ecc71;
+    color: white;
+
+    font-size: 11px;
+    font-weight: bold;
+
+    border-radius: 12px;
+}
+
+.my_trending{
+    border: 2px solid #2ecc71;
+
+    box-shadow:
+        0 0 8px rgba(46, 204, 113, 0.35);
+
+    position: relative;
+}
+
+.my_trending:hover{
+    transform: translateY(-3px);
+    box-shadow:
+        0 0 14px rgba(46, 204, 113, 0.5);
+}
+
 /* Optional class you can add with JavaScript to selected theme */
 .container_left button.active-theme {
     color: #ffffff;
@@ -892,7 +1013,7 @@ body {
 
 .reply_edit_header{
 
-    display:flex;
+    display:none;
 
     align-items:center;
 

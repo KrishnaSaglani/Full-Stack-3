@@ -73,6 +73,9 @@ Also:
 // INSTEAD DO:
     localStorage.removeItem("current_room");
 
+// Always store strings in localstorage:
+localStorage.setItem('current_room', JSON.stringify(room));
+
 7. Date and time in Javascript
 
         const created = new Date(room.date_created);
@@ -198,3 +201,6 @@ Also:
             x.toString()->string
             JSON.stringify(x) ->string
             
+
+19. // Always clear before appending new stuff
+    roomsArea.innerHTML="";

@@ -36,10 +36,11 @@ Its basically going to involve:
 
 
 18. Fix UI bugs! --done
-18. Load 10 most trending Chatrooms onto sidebar.
-19. Create the Edit, Delete and Replying button functions.
-19. In create chatroom, only take integers as input for Max_members.
+18. Load 10 most trending Chatrooms onto sidebar.  --done
+19. Create the Edit, Delete and Replying button functions.  --done
+19. In create chatroom, only take integers as input for Max_members.  --done
 
 
 
 20.Make application live using socket.io.
+21.Add a chatroom members button.
