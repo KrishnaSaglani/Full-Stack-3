@@ -2,7 +2,7 @@
 const API_URL = 'http://localhost:3000';
 
 
-const add_chatrooms_URL = API_URL + "/retrieve_chatrooms"
+const add_chatrooms_URL = "/retrieve_chatrooms"
 async function addChatrooms() {
 
     const buttonArea = document.querySelector(".centre_container");
@@ -183,7 +183,7 @@ async function addChatrooms() {
 addChatrooms();
 
 
-const enter_URL = `${API_URL}/enter_chatroom`;
+const enter_URL = `/enter_chatroom`;
 async function enter_room(room){
     console.log(`entered room ${room.name}`);
 
@@ -196,7 +196,7 @@ async function enter_room(room){
 }
 
 
-const refresh_URL = API_URL + "/refresh_chatrooms";
+const refresh_URL = "/refresh_chatrooms";
 async function refresh_browse()
 {
     try{

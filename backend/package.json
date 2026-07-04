@@ -12,6 +12,7 @@
   "type": "commonjs",
   "dependencies": {
     "msnodesqlv8": "^5.2.0",
-    "mssql": "^12.5.4"
+    "mssql": "^12.5.4",
+    "socket.io": "^4.8.3"
   }
 }

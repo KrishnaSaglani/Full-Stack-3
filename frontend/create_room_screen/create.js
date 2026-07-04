@@ -10,7 +10,7 @@ function retry(){
 }
 
 
-const create_tables_URL = "http://localhost:3000/create_tables";
+const create_tables_URL = "/create_tables";
 async function create_tables(chatroom_id, name){
 
     try{
@@ -48,7 +48,7 @@ async function create_tables(chatroom_id, name){
 
 
 
-const create_room_URL = "http://localhost:3000/create_room";
+const create_room_URL = "/create_room";
 async function create_room(){
 
     // getting all the fields

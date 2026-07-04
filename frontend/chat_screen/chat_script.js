@@ -1,6 +1,24 @@
 // const { json } = require("body-parser");
 
-const API_URL = 'http://localhost:3000';
+
+// Socket.io connection:
+const socket = io("http://localhost:3000");
+socket.on("connect", function(){
+
+    console.log("Connected!");
+    console.log(socket.id);
+
+    const user = localStorage.getItem("storedUser");
+    console.log(`${user} connected!`)
+
+});
+socket.on("disconnect", function(){
+
+    console.log("Disconnected.");
+
+});
+
+// const API_URL = 'http://localhost:3000';
 
 // for loading chats via polling
 let polling_Interval = null;
@@ -10,7 +28,7 @@ let menu_open = 0;
 let reply_edit_header_open = false;
 let replying = false;
 let reply_edit_chat_id = 0;
-
+let first_open = false;
 
 
 
@@ -45,6 +63,30 @@ function stopPolling(){
 
 
 
+// Lets replace polling now!
+socket.on("new_message", async function(data){
+    console.log("[RECEIVED]", data);
+    last_chat_id = await load_chats(data.room_id, last_chat_id);
+    console.log(`Loaded chats for room ${data.room_id}` );
+
+    // scroll up whenever new message is received!
+    const chatArea = document.getElementById("chats");
+    chatArea.scrollTop = chatArea.scrollHeight;
+ 
+});
+
+socket.on("edited_message", async function(data){
+    console.log("[RECEIVED]", data);
+    await load_edited_chat(data.room_id, data.chat_id)
+    console.log(`Edited chat id ${data.chat_id}` );
+});
+
+socket.on("deleted_message", async function(data){
+    console.log("[RECEIVED]", data);
+    await load_edited_chat(data.room_id, data.chat_id);
+    console.log(`Deleted chat id ${data.chat_id}` );
+});
+
 
 
 
@@ -55,8 +97,8 @@ function stopPolling(){
 async function browse_chatroom_page(){
 
     // stop polling this chat
-    stopPolling();
-    leave_chat();
+    // stopPolling();
+    await leave_chat();
 
     window.location.href = "../browse_screen/browse.html";
 }
@@ -64,8 +106,8 @@ async function browse_chatroom_page(){
 //create chatroom button
 async function create_chatroom_page(){
     // stop polling the chat
-    stopPolling();
-    leave_chat();
+    // stopPolling();
+    await leave_chat();
 
     window.location.href = "../create_room_screen/create_room.html";
 }
@@ -74,11 +116,10 @@ async function create_chatroom_page(){
 
 
 
-
-
+const load_chats_URL = "/load_chats";
 
 // open chat
-function open_chat()
+async function open_chat()
 {
     // local storage stores data in string 
     const room_string = localStorage.getItem('current_room');
@@ -89,14 +130,14 @@ function open_chat()
     const current_room = JSON.parse(room_string);
     console.log("current_room =", current_room);
 
-    // make required stuff visible!
+    // make required stuff visible! Like Leave button and send button, typing box!
     document.getElementById("leaveButton").style.display ="flex";
     document.getElementById("chat_input_area").style.display ="flex";
 
     // start with removing the header initially!
     document.querySelector(".reply_edit_header").style.display ="none";
 
-    chat_input_area.classList.add("active");
+    // chat_input_area.classList.add("active");
     document.querySelector(".container_right").classList.add("chat_open");
 
     // adding title
@@ -107,16 +148,35 @@ function open_chat()
     console.log(`Entered room ${current_room.name}`);
 
 
+    
+
+    // focus on msg box too!
+    const msgBox = document.querySelector(".typing_box");
+    msgBox.focus();
+
+
     // add a member to Chatrooms table and well as this chatroom's table
     add_member(current_room.chatroom_id);
 
+    // also add to socket.io room!
+    socket.emit("join_room",{
+        chatroom_id:current_room.chatroom_id,
+        username: localStorage.getItem("storedUser")
+    })
 
-    // load all chats
-    startPolling(current_room.chatroom_id);
 
-    
+    // load all chats only the first time!
+    last_chat_id =0;
+    last_chat_id = await load_chats(current_room.chatroom_id, last_chat_id);
+    // startPolling(current_room.chatroom_id);
+
+
+    // scroll up whenever room opened
+    const chatArea = document.getElementById("chats");
+    chatArea.scrollTop = chatArea.scrollHeight;
 }
 open_chat();
+
 
 
 async function leave_chat()
@@ -140,7 +200,7 @@ async function leave_chat()
 
 
     // stop polling the chat
-    stopPolling();
+    // stopPolling();
 
 
     // remove a member from chatroom members
@@ -150,6 +210,14 @@ async function leave_chat()
 
         // DONT forget to do await!!! Or execution will simply move ahead!!
         await remove_member(current_room.chatroom_id);
+
+        // leave the socketroom you just joined
+        await socket.emit("leave_room", {
+            chatroom_id: current_room.chatroom_id,
+            username: localStorage.getItem("storedUser")
+        });
+
+        // remove from local storage
         localStorage.removeItem("current_room");
 }
 
@@ -173,7 +241,7 @@ function logout(){
 
 async function add_member(chatroom_id)
 {
-    add_member_URL = API_URL+"/add_member";
+    add_member_URL = "/add_member";
     const user = localStorage.getItem('storedUser');
 
     try{
@@ -208,7 +276,7 @@ async function add_member(chatroom_id)
 
 async function remove_member(chatroom_id)
 {
-    remove_member_URL = API_URL+"/remove_member";
+    remove_member_URL = "/remove_member";
     const user = localStorage.getItem('storedUser');
 
     try{
@@ -247,7 +315,7 @@ async function remove_member(chatroom_id)
 
 
 
-const delete_chat_URL = API_URL + "/delete_chat";
+const delete_chat_URL = "/delete_chat";
 async function delete_chat(chat_id, room_id)
 {
     try{
@@ -264,26 +332,12 @@ async function delete_chat(chat_id, room_id)
 
         if(result.okay)
         {
-            const messages = document.querySelectorAll(".message");
 
-            for(const message of messages)
-            {
+            // focus on typing now!
+            const msgBox = document.querySelector(".typing_box");
+            msgBox.focus();
 
-                const id = message.querySelector(".id");
-                if(id && id.innerText === chat_id.toString())
-                {
-                    const text = message.querySelector(".text");
-                    text.innerText = "This message was deleted.";
-                    message.classList.add("deleted");
-
-
-                    // also remove the options button from this now!!
-                    const options = message.querySelector(".options_button");
-                    options.remove();
-                    break;
-                }
-
-            }
+            // rest occurs in sendChat() !!
 
         }
         else{
@@ -346,6 +400,10 @@ async function edit_chat(chat_id, room_id, message)
     // finally saving the reply_edit_chat_id
     reply_edit_chat_id = chat_id;
 
+    // focus on typing now!
+    const msgBox = document.querySelector(".typing_box");
+    msgBox.focus();
+
     // rest is handled in send_chat() itself
 }
 
@@ -399,6 +457,11 @@ async function reply_chat(chat_id, room_id, message, sender)
     // finally saving the reply_edit_chat_id
     reply_edit_chat_id = chat_id;
 
+
+    // focus on typing now!
+    const msgBox = document.querySelector(".typing_box");
+    msgBox.focus();
+
     // rest is handled in send_chat() itself
 }
 
@@ -410,7 +473,7 @@ async function reply_chat(chat_id, room_id, message, sender)
 
 
 
-const load_edited_chat_URL = API_URL + "/load_edited_chat";
+const load_edited_chat_URL = "/load_edited_chat";
 async function load_edited_chat(chatroom_id,edited_id)
 {
         if(edited_id != 0)
@@ -434,7 +497,9 @@ async function load_edited_chat(chatroom_id,edited_id)
                     if(result.okay)
                     {
                         const edited_chat = result.new_chats[0];
-                        // already existing messages
+
+                        
+                        //find in already existing messages
                         const messages= document.querySelectorAll(".message");
 
                             for(const msg of messages)
@@ -442,6 +507,22 @@ async function load_edited_chat(chatroom_id,edited_id)
                                 const id = msg.querySelector(".id");
                                 if(Number(id.innerText) === edited_id)
                                 {
+                                    // first check if its deleted!!
+                                    
+                                    if(edited_chat.deleted)
+                                    {
+                                        msg.classList.add("deleted");
+                                        const text = msg.querySelector(".text");
+                                        text.innerText="This message was deleted.";
+
+                                        // remove options button
+                                        const options = msg.querySelector(".options_button");
+                                        options.remove();
+                                        
+                                        return;
+                                    }
+
+
                                     // loading this single message in different way
                                     msg.classList.add("edited");
 
@@ -475,7 +556,6 @@ async function load_edited_chat(chatroom_id,edited_id)
 
 
 // loading all chats
-const load_chats_URL = API_URL + "/load_chats";
 
 async function load_chats(chatroom_id, last_chat_id){
         // load regular chats
@@ -597,6 +677,8 @@ async function load_chats(chatroom_id, last_chat_id){
                               
                             }
 
+
+
                             
                             
                             const menus = document.querySelectorAll(".chat_menu");
@@ -606,6 +688,9 @@ async function load_chats(chatroom_id, last_chat_id){
                             }
                             
                             message.appendChild(menu);
+
+
+
                         });
 
                     if(!chat.deleted){message.appendChild(options);}
@@ -651,8 +736,8 @@ async function load_chats(chatroom_id, last_chat_id){
 
 
 
-const upload_chats_URL = API_URL + "/upload_chat";
-const edit_chat_URL = API_URL + "/edit_chat";
+const upload_chats_URL = "/upload_chat";
+const edit_chat_URL = "/edit_chat";
 async function send_chat()
 {
     scrolled_up = 0;
@@ -689,28 +774,28 @@ async function send_chat()
 
         const chat_id = reply_edit_chat_id;
         const messages = document.querySelectorAll(".message");
-        for( const msg of messages)
-        {
-            const id = msg.querySelector(".id");
-            if(Number(id.innerText) === chat_id)
-            {
-                const senderName = msg.querySelector(".sender").innerText;
+        // for( const msg of messages)
+        // {
+        //     const id = msg.querySelector(".id");
+        //     if(Number(id.innerText) === chat_id)
+        //     {
+        //         const senderName = msg.querySelector(".sender").innerText;
 
-                if (senderName != "You")
-                {
-                    alert("Cannot edit other's messages");
+        //         if (senderName != "You")
+        //         {
+        //             alert("Cannot edit other's messages");
 
-                    // reset everything
-                    reply_edit_header.style.display = "none";
-                    reply_edit_header_open = false;
-                    reply_edit_chat_id = 0;
+        //             // reset everything
+        //             reply_edit_header.style.display = "none";
+        //             reply_edit_header_open = false;
+        //             reply_edit_chat_id = 0;
 
-                    msgBox.value = "";
-                    msgBox.focus();
-                    return;
-                }
-            }
-        }
+        //             msgBox.value = "";
+        //             msgBox.focus();
+        //             return;
+        //         }
+        //     }
+        // }
         
     // time to actualy edit the message
         
@@ -863,7 +948,7 @@ async function send_chat()
 
 
 
-    const trending_rooms_URL = API_URL + "/trending_rooms";
+    const trending_rooms_URL = "/trending_rooms";
     async function Trending_Rooms()
     {
         const roomsArea = document.querySelector(".container_left");
@@ -947,7 +1032,6 @@ async function send_chat()
                             Rule: ${room.rule}<br>
                             Active for: ${days}d, ${hours}h
                             `;
-
                             expanded =true;
                         }
                         else
@@ -974,6 +1058,8 @@ async function send_chat()
                         localStorage.setItem("current_room", JSON.stringify(room));
                         last_chat_id =0;
                         await open_chat();
+
+                        
                     });
 
 

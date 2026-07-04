@@ -1,10 +1,35 @@
 const express = require('express');
+
+// socket.io requires http connection
+const http = require("http");
+
+
 const sql = require('mssql/msnodesqlv8');
 const cors = require('cors');
 const app = express();
-
 app.use(cors());
 app.use(express.json());
+
+// connecting frontend and backend:
+const path = require("path");
+app.use(express.static(path.join(__dirname, "../frontend")));
+
+
+// Now creating server itself:
+const server = http.createServer(app);
+    // Because Socket.IO needs the HTTP server, not the Express app.
+
+// Initializing socket.io
+const {Server} = require("socket.io");
+
+const io = new Server(server,{
+    cors:{
+        origin:"*"
+    }
+});
+
+
+
 
 const config = {
     connectionString: 'Driver={ODBC Driver 17 for SQL Server};Server=localhost\\SQLEXPRESS01;Database=KSChat;Trusted_Connection=yes;',
@@ -652,7 +677,7 @@ app.post("/remove_member", async function(req, res){
 
 app.post("/upload_chat", async function(req, res){
 
-    console.log(req.body);
+    // console.log(req.body);
 
         const {
         room_id,
@@ -664,7 +689,7 @@ app.post("/upload_chat", async function(req, res){
         message
     } = req.body;
 
-    console.log(room_id);
+    // console.log(room_id);
 
     try{
 
@@ -722,6 +747,13 @@ app.post("/upload_chat", async function(req, res){
                     @message=@message;
             `);
 
+
+        // if there is success, then emit this chat to all chatrooms from the backend!!
+        // This emit occurs from backend!!
+
+        io.to(room_name).emit("new_message", {room_id:room_id});
+        console.log(`Emmited message ${message} from backend by ${sender}`);
+
         res.json({
             okay: true
         });
@@ -741,7 +773,7 @@ app.post("/upload_chat", async function(req, res){
 
 app.post("/edit_chat", async function(req, res){
 
-    console.log(req.body);
+    // console.log(req.body);
 
         const {
         room_id,
@@ -754,7 +786,7 @@ app.post("/edit_chat", async function(req, res){
         chat_id
     } = req.body;
 
-    console.log(room_id);
+    // console.log(room_id);
 
     try{
 
@@ -811,7 +843,12 @@ app.post("/edit_chat", async function(req, res){
 
             `);
 
-            console.log(`Edited chat with : ${message}`);
+        console.log(`Edited chat with : ${message}`);
+
+        // Emit to all others
+
+        io.to(room_name).emit("edited_message", {room_id, chat_id});
+        console.log(`[EMMITED] Edited chat: ${message}`);
         res.json({
             okay: true
         });
@@ -833,7 +870,7 @@ app.post("/edit_chat", async function(req, res){
 
 app.post("/delete_chat", async function(req, res){
 
-    console.log(req.body);
+    // console.log(req.body);
 
         const {
         room_id,
@@ -871,71 +908,10 @@ app.post("/delete_chat", async function(req, res){
                     @chat_id = @chat_id;
             `);
 
-        res.json({
-            okay: true
-        });
 
-    }
-    catch(err){
-
-        console.error(err);
-
-        if(err.number === 50012)
-        {
-            return res.json({
-                okay: false,
-                message: "Message not found."
-            });
-        }
-
-
-        return res.json({
-            okay: false,
-            message: err.message
-        });
-
-    }
-});
-
-app.post("/edit_chat", async function(req, res){
-
-    console.log(req.body);
-
-        const {
-        room_id,
-        chat_id
-    } = req.body;
-
-    console.log(`Deleting chat from room_id ${room_id}`);
-
-    try{
-
-        const room_name = `Room_${room_id}`;
-
-        const result = await pool.request()
-            .input("room_name", sql.NVarChar, room_name)
-            .input("chat_id", sql.Int, chat_id)
-            .query(`
-                DECLARE @SQL NVARCHAR(MAX);
-
-                SET @SQL = '
-                    UPDATE ' + QUOTENAME(@room_name) + '
-                    SET
-                        deleted = 1,
-                        message = ''''
-                    WHERE chat_id = @chat_id;
-
-                    IF @@ROWCOUNT = 0
-                    BEGIN
-                        THROW 50012, ''Message not found.'', 1;
-                    END
-                ';
-
-                EXEC sp_executesql
-                    @SQL,
-                    N'@chat_id INT',
-                    @chat_id = @chat_id;
-            `);
+        // Emit deleted message to all
+        io.to(room_name).emit("deleted_message",{room_id, chat_id});
+        console.log(`[EMMITED] deleted chat`);
 
         res.json({
             okay: true
@@ -963,71 +939,140 @@ app.post("/edit_chat", async function(req, res){
     }
 });
 
-app.post("/reply_chat", async function(req, res){
-
-    console.log(req.body);
-
-        const {
-        room_id,
-        chat_id
-    } = req.body;
-
-    console.log(`Deleting chat from room_id ${room_id}`);
-
-    try{
-
-        const room_name = `Room_${room_id}`;
-
-        const result = await pool.request()
-            .input("room_name", sql.NVarChar, room_name)
-            .input("chat_id", sql.Int, chat_id)
-            .query(`
-                DECLARE @SQL NVARCHAR(MAX);
-
-                SET @SQL = '
-                    UPDATE ' + QUOTENAME(@room_name) + '
-                    SET
-                        deleted = 1,
-                        message = ''''
-                    WHERE chat_id = @chat_id;
-
-                    IF @@ROWCOUNT = 0
-                    BEGIN
-                        THROW 50012, ''Message not found.'', 1;
-                    END
-                ';
-
-                EXEC sp_executesql
-                    @SQL,
-                    N'@chat_id INT',
-                    @chat_id = @chat_id;
-            `);
-
-        res.json({
-            okay: true
-        });
-
-    }
-    catch(err){
-
-        console.error(err);
-
-        if(err.number === 50012)
-        {
-            return res.json({
-                okay: false,
-                message: "Message not found."
-            });
-        }
 
 
-        return res.json({
-            okay: false,
-            message: err.message
-        });
 
-    }
-});
+// app.post("/edit_chat", async function(req, res){
+
+//     // console.log(req.body);
+
+//         const {
+//         room_id,
+//         chat_id
+//     } = req.body;
+
+//     console.log(`Deleting chat from room_id ${room_id}`);
+
+//     try{
+
+//         const room_name = `Room_${room_id}`;
+
+//         const result = await pool.request()
+//             .input("room_name", sql.NVarChar, room_name)
+//             .input("chat_id", sql.Int, chat_id)
+//             .query(`
+//                 DECLARE @SQL NVARCHAR(MAX);
+
+//                 SET @SQL = '
+//                     UPDATE ' + QUOTENAME(@room_name) + '
+//                     SET
+//                         deleted = 1,
+//                         message = ''''
+//                     WHERE chat_id = @chat_id;
+
+//                     IF @@ROWCOUNT = 0
+//                     BEGIN
+//                         THROW 50012, ''Message not found.'', 1;
+//                     END
+//                 ';
+
+//                 EXEC sp_executesql
+//                     @SQL,
+//                     N'@chat_id INT',
+//                     @chat_id = @chat_id;
+//             `);
+
+//         res.json({
+//             okay: true
+//         });
+
+//     }
+//     catch(err){
+
+//         console.error(err);
+
+//         if(err.number === 50012)
+//         {
+//             return res.json({
+//                 okay: false,
+//                 message: "Message not found."
+//             });
+//         }
+
+
+//         return res.json({
+//             okay: false,
+//             message: err.message
+//         });
+
+//     }
+// });
+
+// app.post("/reply_chat", async function(req, res){
+
+//     // console.log(req.body);
+
+//         const {
+//         room_id,
+//         chat_id
+//     } = req.body;
+
+//     console.log(`Replying to chat from room_id ${room_id}`);
+
+//     try{
+
+//         const room_name = `Room_${room_id}`;
+
+//         const result = await pool.request()
+//             .input("room_name", sql.NVarChar, room_name)
+//             .input("chat_id", sql.Int, chat_id)
+//             .query(`
+//                 DECLARE @SQL NVARCHAR(MAX);
+
+//                 SET @SQL = '
+//                     UPDATE ' + QUOTENAME(@room_name) + '
+//                     SET
+//                         deleted = 1,
+//                         message = ''''
+//                     WHERE chat_id = @chat_id;
+
+//                     IF @@ROWCOUNT = 0
+//                     BEGIN
+//                         THROW 50012, ''Message not found.'', 1;
+//                     END
+//                 ';
+
+//                 EXEC sp_executesql
+//                     @SQL,
+//                     N'@chat_id INT',
+//                     @chat_id = @chat_id;
+//             `);
+
+//         res.json({
+//             okay: true
+//         });
+
+//     }
+//     catch(err){
+
+//         console.error(err);
+
+//         if(err.number === 50012)
+//         {
+//             return res.json({
+//                 okay: false,
+//                 message: "Message not found."
+//             });
+//         }
+
+
+//         return res.json({
+//             okay: false,
+//             message: err.message
+//         });
+
+//     }
+// });
 
 
 
@@ -1048,6 +1093,49 @@ app.get('/trending_rooms', async function (req, res){
 });
 
 const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`Server live at http://localhost:${PORT}`);
+// app.listen(PORT, () => {
+//     console.log(`Server live at http://localhost:${PORT}`);
+// });
+
+// now socket.io server listens at port 3000
+server.listen(3000,function(){
+
+    console.log("Server live at http://localhost:3000");
+
+});
+
+// Whenever someone opens your website you'll see "New user connected".
+
+// initially, there is no socket, so we use io.on instead of socket.on
+io.on("connection", function(socket){
+
+    console.log(`User connected! Socket ID: ${socket.id}`);
+
+    socket.on("disconnect", function(){
+
+        console.log(`User disconnected! Socket ID: ${socket.id}`);
+
+    });
+
+    socket.on("join_room", function(data){
+
+        const roomName = `Room_${data.chatroom_id}`;
+
+        // This is a Socket.IO room, not your SQL table.
+        socket.join(roomName);
+
+        console.log(`${data.username} joined room ${roomName}`);
+
+    });
+
+    socket.on("leave_room", function(data){
+
+        const roomName = `Room_${data.chatroom_id}`;
+
+        socket.leave(roomName);
+
+        console.log(`${data.username} left ${roomName}`);
+
+    });
+
 });
