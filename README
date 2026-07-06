@@ -1,0 +1,11 @@
+1. To implement tunneling:
+    go to BASH. Load directory Desktop/Cloudfared
+
+    Then do :
+    ./cloudflared.exe tunnel --url http://localhost:3000.
+
+
+    Backend should be ON when you do this.
+
+2. Starting backend:
+    just run index.js

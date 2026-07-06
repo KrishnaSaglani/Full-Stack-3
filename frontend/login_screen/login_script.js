@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/login';
+const API_URL = '/login';
 
 async function check_credentials() {
     // 1. Grab the values from the HTML inputs
@@ -53,7 +53,7 @@ async function check_credentials() {
 }
 
 
-const Register_URL = 'http://localhost:3000/register';
+const Register_URL = '/register';
 async function register() {
     // 1. Grab the values from the HTML inputs
     const username = document.getElementById('Username').value;

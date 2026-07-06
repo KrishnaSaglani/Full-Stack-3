@@ -56,7 +56,14 @@ async function connectToDatabase() {
 // 3. Call the function immediately
 connectToDatabase();
 
+// base get to get it started
+app.get("/", function(req, res){
 
+    res.sendFile(
+        path.join(__dirname, "../frontend/login_screen/login.html")
+    );
+
+});
 
 app.post('/login', async function (req, res) {
     try {

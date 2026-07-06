@@ -2,7 +2,8 @@
 
 
 // Socket.io connection:
-const socket = io("http://localhost:3000");
+// const socket = io("http://localhost:3000");
+const socket = io();
 socket.on("connect", function(){
 
     console.log("Connected!");
@@ -17,8 +18,6 @@ socket.on("disconnect", function(){
     console.log("Disconnected.");
 
 });
-
-// const API_URL = 'http://localhost:3000';
 
 // for loading chats via polling
 let polling_Interval = null;

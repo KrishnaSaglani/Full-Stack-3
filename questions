@@ -1,0 +1,8 @@
+Explain Socket.IO rooms.
+Why did you choose SQL as the source of truth?
+Why use Socket.IO only as a notification mechanism?
+How did you avoid duplicate DOM rendering?
+How do dynamic chatroom tables work?
+What race conditions did you encounter?
+Why did you switch from localStorage to sessionStorage?
+How did you expose your local server to the internet?
