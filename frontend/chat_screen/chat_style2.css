@@ -1,0 +1,1375 @@
+/* =====================================================
+   TELEGRAM DESKTOP — THEME TOKENS
+   (Night / Dark palette — matches Telegram Desktop's
+   built-in "Dark Blue"-style theme)
+===================================================== */
+:root {
+    --tg-bg-primary:   #0e1621;   /* main chat canvas            */
+    --tg-bg-secondary: #17212b;   /* sidebar / header / composer */
+    --tg-bg-tertiary:  #1c2733;   /* hover states                */
+    --tg-bg-elevated:  #212d3b;   /* menus / dropdowns / cards   */
+    --tg-bg-input:     #101921;   /* text fields                 */
+
+    --tg-accent:        #2AABEE; /* Telegram brand blue          */
+    --tg-accent-dark:   #229ED9;
+    --tg-accent-active: #2b5278; /* selected chat / active state */
+    --tg-accent-hover:  #3a6a94;
+
+    --tg-text-primary:   #ffffff;
+    --tg-text-secondary: #8b98a5;
+    --tg-text-tertiary:  #6c7883;
+    --tg-text-muted:     #4a5560;
+
+    --tg-border:        rgba(255, 255, 255, 0.06);
+    --tg-border-strong: rgba(255, 255, 255, 0.12);
+
+    --tg-bubble-out:      #2b5f8a;
+    --tg-bubble-out-dark: #234b6e;
+    --tg-bubble-in:       #1c2733;
+
+    --tg-danger:  #e53935;
+    --tg-success: #4fae4e;
+    --tg-warning: #f0b90b;
+
+    --tg-radius-lg: 16px;
+    --tg-radius-md: 12px;
+    --tg-radius-sm: 8px;
+
+    --tg-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+    --tg-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.3);
+
+    --tg-header-height: 60px;
+    --tg-header-height-mobile: 56px;
+    --tg-sidebar-width: 280px;
+
+    --tg-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               Helvetica, Arial, sans-serif;
+}
+
+/* =========================
+   Basic Reset
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--tg-font);
+}
+
+body {
+    min-height: 100vh;
+    overflow: hidden;
+    color: var(--tg-text-primary);
+    font-size: 14px;
+
+    background:
+        radial-gradient(circle at 20% 15%, rgba(42, 171, 238, 0.05), transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(43, 82, 120, 0.08), transparent 45%),
+        var(--tg-bg-primary);
+}
+
+/* thin, unobtrusive scrollbars everywhere — Telegram style */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ===================================================
+   NAVIGATION BAR
+=================================================== */
+
+.nav_bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: var(--tg-header-height);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 20px;
+
+    background: var(--tg-bg-secondary);
+    border-bottom: 1px solid var(--tg-border);
+    box-shadow: var(--tg-shadow-sm);
+
+    z-index: 1000;
+}
+
+/* ===================================================
+   LEFT & RIGHT GROUPS
+=================================================== */
+
+.nav_left,
+.nav_right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ===================================================
+   ROOM TITLE
+=================================================== */
+
+#room_title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+
+    color: var(--tg-text-primary);
+    white-space: nowrap;
+}
+
+/* ===================================================
+   PROFILE BUTTON
+=================================================== */
+
+.profile_button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 8px 16px;
+
+    border: none;
+    border-radius: var(--tg-radius-sm);
+
+    background: var(--tg-accent);
+    color: white;
+
+    font-size: 0.88rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.profile_button::before {
+    content: "\1F464"; /* bust in silhouette */
+    font-size: 0.85rem;
+}
+
+.profile_button:hover {
+    background: var(--tg-accent-dark);
+    transform: translateY(-1px);
+    box-shadow: none;
+}
+
+/* ===================================================
+   ABOUT BUTTON
+=================================================== */
+
+.about_button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 8px 16px;
+
+    border: 1px solid var(--tg-border-strong);
+    border-radius: var(--tg-radius-sm);
+
+    background: transparent;
+    color: var(--tg-text-secondary);
+
+    font-size: 0.88rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.about_button::before {
+    content: "\2139"; /* info symbol */
+    font-size: 0.9rem;
+}
+
+.about_button:hover {
+    background: var(--tg-bg-tertiary);
+    color: var(--tg-text-primary);
+    transform: none;
+    box-shadow: none;
+}
+
+/* ===================================================
+   MEMBERS BUTTON
+=================================================== */
+
+.members_modal_overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:rgba(0,0,0,.55);
+
+    backdrop-filter:blur(6px);
+
+    z-index:5000;
+
+}
+
+.members_modal_overlay.active{
+
+    display:flex;
+
+}
+
+.members_modal{
+
+    width:380px;
+
+    max-width:90vw;
+
+    max-height:75vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+    overflow:hidden;
+
+    border-radius:18px;
+
+    background:#17233d;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+        0 18px 40px rgba(0,0,0,.45);
+
+    animation:popup .22s ease;
+
+}
+
+@keyframes popup{
+
+    from{
+
+        opacity:0;
+
+        transform:scale(.92);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:scale(1);
+
+    }
+
+}
+
+.members_modal_header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:16px 20px;
+
+    font-size:18px;
+
+    font-weight:600;
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+}
+
+.members_close{
+
+    border:none;
+
+    background:none;
+
+    color:white;
+
+    font-size:22px;
+
+    cursor:pointer;
+
+}
+
+.members_list{
+
+    flex:1;
+
+    overflow-y:auto;
+
+}
+
+.member{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    padding:14px 18px;
+
+    border-bottom:1px solid rgba(255,255,255,.05);
+
+}
+
+.member_avatar{
+
+    width:42px;
+
+    height:42px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:#3b82f6;
+
+    color:white;
+
+    font-weight:bold;
+
+    font-size:18px;
+
+}
+
+
+.member_name{
+
+    flex:1;
+
+    color:white;
+
+    font-size:15px;
+
+}
+
+.member_status{
+
+    color:#22c55e;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.members_button{
+
+    padding:10px 18px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:linear-gradient(
+        135deg,
+        #0ea5e9,
+        #2563eb
+    );
+
+    color:white;
+
+    font-size:0.95rem;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    box-shadow:
+        0 4px 14px rgba(37,99,235,.25);
+
+}
+
+.members_button:hover{
+
+    transform:translateY(-2px);
+
+    background:linear-gradient(
+        135deg,
+        #38bdf8,
+        #3b82f6
+    );
+
+    box-shadow:
+        0 8px 20px rgba(37,99,235,.4);
+
+}
+
+.members_button:active{
+
+    transform:scale(.96);
+
+}
+
+.members_button:focus{
+
+    outline:none;
+
+    box-shadow:
+        0 0 0 3px rgba(59,130,246,.25);
+
+}
+
+
+/* ===================================================
+   LEAVE CHAT
+=================================================== */
+
+#leaveButton {
+    display: none;
+
+    padding: 8px 16px;
+
+    border-radius: var(--tg-radius-sm);
+    border: 1px solid rgba(229, 57, 53, 0.35);
+
+    background: rgba(229, 57, 53, 0.1);
+    color: #ffb4b0;
+
+    font-size: 0.88rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+#leaveButton:hover {
+    background: rgba(229, 57, 53, 0.22);
+    border-color: var(--tg-danger);
+    color: white;
+}
+
+/* ===================================================
+   LOGOUT
+=================================================== */
+
+.logout_button {
+    padding: 8px 16px;
+
+    border: none;
+    border-radius: var(--tg-radius-sm);
+
+    background: var(--tg-danger);
+    color: white;
+
+    font-size: 0.88rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.logout_button:hover {
+    background: #ff5147;
+    transform: translateY(-1px);
+    box-shadow: none;
+}
+
+/* =========================
+   Left Sidebar: Chat List
+========================= */
+.container_left {
+    position: fixed;
+    top: var(--tg-header-height);
+    left: 0;
+    bottom: 142px;
+
+    width: var(--tg-sidebar-width);
+    padding: 8px;
+    overflow-y: auto;
+
+    background: var(--tg-bg-secondary);
+    border-right: 1px solid var(--tg-border);
+}
+
+/* Scrollbar styling */
+.container_left::-webkit-scrollbar {
+    width: 5px;
+}
+
+.container_left::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+}
+
+/* Theme / filter buttons added by JavaScript */
+.container_left button {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 2px;
+
+    text-align: left;
+    color: var(--tg-text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    cursor: pointer;
+    border: none;
+    border-radius: var(--tg-radius-sm);
+
+    background: transparent;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.container_left button:hover {
+    transform: none;
+    color: var(--tg-text-primary);
+    background: var(--tg-bg-tertiary);
+}
+
+.room_card {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    padding: 14px;
+    margin-bottom: 8px;
+
+    border: 1px solid var(--tg-border);
+    border-radius: var(--tg-radius-md);
+
+    background: var(--tg-bg-elevated);
+
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.room_card:hover {
+    background: #26313f;
+    border-color: var(--tg-border-strong);
+    transform: none;
+}
+
+.trend_title {
+    color: var(--tg-text-secondary);
+
+    font-size: 0.78rem;
+    font-weight: 700;
+
+    margin-bottom: 12px;
+    margin-top: 4px;
+
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+
+    padding-bottom: 8px;
+
+    border-bottom: 1px solid var(--tg-border);
+}
+
+.title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--tg-text-primary);
+
+    margin-bottom: 4px;
+}
+
+.members {
+    color: var(--tg-accent);
+    font-size: 12.5px;
+    font-weight: 500;
+
+    margin-bottom: 8px;
+}
+
+.details {
+    color: var(--tg-text-secondary);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.details_button {
+    align-self: flex-start;
+
+    padding: 6px 14px;
+
+    border: none;
+    border-radius: var(--tg-radius-sm);
+
+    background: var(--tg-accent);
+    color: white;
+
+    font-size: 12.5px;
+    font-weight: 600;
+
+    cursor: pointer;
+    margin-top: 10px;
+
+    transition: background 0.15s ease;
+}
+
+.details_button:hover {
+    background: var(--tg-accent-dark);
+}
+
+.my_trending::before {
+    content: "Your Room";
+
+    position: absolute;
+    top: 10px;
+    right: 12px;
+
+    padding: 3px 8px;
+
+    background: var(--tg-success);
+    color: white;
+
+    font-size: 10.5px;
+    font-weight: 700;
+
+    border-radius: 20px;
+}
+
+.my_trending {
+    border: 1px solid var(--tg-success);
+    position: relative;
+}
+
+.my_trending:hover {
+    transform: none;
+    background: #26313f;
+}
+
+/* Optional class you can add with JavaScript to selected theme */
+.container_left button.active-theme {
+    color: var(--tg-text-primary);
+    background: var(--tg-accent-active);
+    border-color: transparent;
+    box-shadow: none;
+}
+
+/* =========================
+   Bottom Left: Chatroom Buttons
+========================= */
+.container_left_bottom {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+
+    width: var(--tg-sidebar-width);
+    min-height: 142px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 12px 14px;
+
+    background: var(--tg-bg-secondary);
+    border-top: 1px solid var(--tg-border);
+    border-right: 1px solid var(--tg-border);
+}
+
+/* Both buttons */
+.create_chatroom,
+.browse_chatroom {
+    width: 100%;
+    padding: 11px;
+
+    border: none;
+    border-radius: var(--tg-radius-sm);
+
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+/* Browse button: secondary / outlined */
+.browse_chatroom {
+    background: transparent;
+    border: 1px solid var(--tg-border-strong);
+    color: var(--tg-text-secondary);
+    box-shadow: none;
+}
+
+.browse_chatroom:hover {
+    transform: none;
+    background: var(--tg-bg-tertiary);
+    color: var(--tg-text-primary);
+    box-shadow: none;
+}
+
+/* Create button: primary accent */
+.create_chatroom {
+    background: var(--tg-accent);
+    box-shadow: none;
+}
+
+.create_chatroom:hover {
+    transform: translateY(-1px);
+    background: var(--tg-accent-dark);
+    box-shadow: var(--tg-shadow-sm);
+}
+
+/* Click effect */
+.create_chatroom:active,
+.browse_chatroom:active {
+    transform: scale(0.98);
+}
+
+/* =====================================================
+   CHAT AREA
+===================================================== */
+.container_right {
+    position: fixed;
+
+    top: var(--tg-header-height);
+    left: var(--tg-sidebar-width);
+    right: 0;
+
+    /* Leave space for typing box + send button */
+    bottom: 95px;
+
+    padding: 20px 24px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scroll-behavior: smooth;
+
+    /* subtle wallpaper texture, not a copy of any proprietary pattern */
+    background:
+        radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px) 0 0 / 24px 24px,
+        var(--tg-bg-primary);
+}
+
+.container_right::-webkit-scrollbar {
+    width: 5px;
+}
+
+.container_right::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+/* Placeholder message when no chat is open */
+.container_right::before {
+    content: "Create or Select a Chatroom to begin!";
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    color: var(--tg-text-tertiary);
+    font-size: 0.95rem;
+
+    pointer-events: none;
+}
+
+.container_right.chat_open::before {
+    display: none;
+}
+
+/* Chat input area */
+.chat_input_area {
+    position: fixed;
+
+    left: var(--tg-sidebar-width);
+    right: 0;
+    bottom: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    padding: 12px 18px;
+
+    background: var(--tg-bg-secondary);
+    border-top: 1px solid var(--tg-border);
+
+    z-index: 1000;
+}
+
+.chat_input_area.active {
+    display: flex;
+}
+
+/* =========================
+   Typing Box
+========================= */
+
+.typing_row {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    width: 100%;
+}
+
+.typing_box {
+    flex: 1;
+
+    min-height: 0px;
+    max-height: 90px;
+
+    padding: 11px 16px;
+
+    resize: none;
+    overflow-y: auto;
+
+    color: var(--tg-text-primary);
+    font-size: 0.92rem;
+
+    border-radius: 20px;
+    border: 1px solid var(--tg-border-strong);
+
+    background: var(--tg-bg-input);
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.typing_box::placeholder {
+    color: var(--tg-text-tertiary);
+}
+
+.typing_box:focus {
+    border-color: var(--tg-accent);
+    background: var(--tg-bg-input);
+    box-shadow: 0 0 0 2px rgba(42, 171, 238, 0.15);
+}
+
+/* =====================================================
+   MESSAGE BUBBLE
+===================================================== */
+
+.message {
+    position: relative;
+
+    max-width: 62%;
+
+    padding: 8px 12px 9px;
+    margin: 6px 0;
+
+    border-radius: var(--tg-radius-lg);
+
+    font-size: 15px;
+    line-height: 1.4;
+    word-wrap: break-word;
+
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+
+    animation: fadeIn 0.15s ease;
+}
+
+/* =====================================================
+   SENT MESSAGE
+===================================================== */
+
+.sent {
+    margin-left: auto;
+
+    background: var(--tg-bubble-out);
+    border: none;
+    border-radius: var(--tg-radius-lg) var(--tg-radius-lg) 4px var(--tg-radius-lg);
+
+    color: white;
+}
+
+/* =====================================================
+   RECEIVED MESSAGE
+===================================================== */
+
+.received {
+    margin-right: auto;
+
+    background: var(--tg-bubble-in);
+    border: none;
+    border-radius: var(--tg-radius-lg) var(--tg-radius-lg) var(--tg-radius-lg) 4px;
+
+    color: white;
+}
+
+/* =====================================================
+   SENDER
+===================================================== */
+
+.sender {
+    font-size: 12.5px;
+    font-weight: 700;
+
+    margin-bottom: 3px;
+
+    color: var(--tg-accent);
+    opacity: 1;
+}
+
+/* =====================================================
+   MESSAGE TEXT
+===================================================== */
+
+.text {
+    font-size: 15px;
+    line-height: 1.4;
+    color: #eef3f9;
+}
+
+/* =====================================================
+   DELETED MESSAGE
+===================================================== */
+
+.deleted {
+    opacity: 0.6;
+    font-style: italic;
+}
+
+.deleted .text {
+    color: var(--tg-text-tertiary);
+}
+
+/* =====================================================
+   EDITED
+===================================================== */
+
+.edited::after {
+    content: "edited";
+
+    align-self: flex-end;
+
+    font-size: 0.68rem;
+    margin-top: 3px;
+
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* =====================================================
+   OPTIONS BUTTON (appears on hover, like Telegram)
+===================================================== */
+
+.message button {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+
+    width: 24px;
+    height: 24px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(0, 0, 0, 0.18);
+    color: rgba(255, 255, 255, 0.85);
+
+    font-size: 0.9rem;
+    cursor: pointer;
+
+    opacity: 0;
+    transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.message:hover button {
+    opacity: 1;
+}
+
+.message button:hover {
+    background: rgba(0, 0, 0, 0.32);
+}
+
+/* =====================================================
+   CHAT MENU
+===================================================== */
+
+.chat_menu {
+    position: absolute;
+    top: 32px;
+    right: 6px;
+
+    width: 160px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    padding: 6px;
+
+    border-radius: var(--tg-radius-md);
+
+    background: var(--tg-bg-elevated);
+    border: 1px solid var(--tg-border-strong);
+    box-shadow: var(--tg-shadow-md);
+
+    z-index: 500;
+}
+
+/* =====================================================
+   MENU BUTTONS
+===================================================== */
+
+.chat_menu button {
+    position: static;
+
+    width: 100%;
+    height: auto;
+
+    padding: 9px 10px;
+
+    border-radius: var(--tg-radius-sm);
+    border: none;
+
+    background: transparent;
+    color: var(--tg-text-primary);
+
+    font-size: 0.86rem;
+    text-align: left;
+
+    cursor: pointer;
+    opacity: 1;
+    transition: background 0.12s ease;
+}
+
+.chat_menu button:hover {
+    background: var(--tg-accent-active);
+}
+
+/* Delete */
+.delete_chat:hover {
+    background: rgba(229, 57, 53, 0.18) !important;
+    color: #ffb4b0;
+}
+
+/* Edit */
+.edit_chat:hover {
+    background: rgba(240, 185, 11, 0.15) !important;
+    color: #ffe192;
+}
+
+/* =========================
+   Reply Preview
+========================= */
+
+.replying {
+    position: relative;
+}
+
+.replying_to {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    margin-bottom: 5px;
+
+    padding: 4px 8px;
+
+    border-left: 3px solid var(--tg-accent);
+    border-radius: 6px;
+
+    background: rgba(42, 171, 238, 0.08);
+    color: #7ec3ff;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Optional little reply arrow */
+.replying_to::before {
+    content: "\21A9";
+    font-size: 12px;
+    color: var(--tg-accent);
+    flex-shrink: 0;
+}
+
+.replying:hover {
+    background: rgba(42, 171, 238, 0.1);
+}
+
+/* =========================
+   Reply / Edit Header
+========================= */
+
+.reply_edit_header {
+    display: none;
+    align-items: center;
+    gap: 10px;
+
+    width: 100%;
+    height: 36px;
+
+    padding: 4px 12px;
+    margin-bottom: 6px;
+
+    border-left: 3px solid var(--tg-accent);
+    border-radius: 8px;
+
+    background: rgba(42, 171, 238, 0.08);
+    box-sizing: border-box;
+}
+
+/* Left Side */
+.reply_edit_info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Editing / Replying */
+.reply_edit_title {
+    color: var(--tg-accent);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Preview Message */
+.reply_edit_preview {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    flex: 1;
+}
+
+/* Close Button */
+.reply_edit_close {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 22px;
+    height: 22px;
+
+    border: none;
+    border-radius: 50%;
+
+    cursor: pointer;
+    font-size: 15px;
+
+    color: var(--tg-text-secondary);
+    background: transparent;
+
+    transition: 0.15s;
+}
+
+.reply_edit_close:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.reply_edit_close:active {
+    transform: scale(0.95);
+}
+
+/* Small Animation */
+@keyframes fadeReply {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =====================================================
+   MESSAGE FADE-IN ANIMATION
+===================================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================
+   Mobile Layout
+========================= */
+
+.hamburger {
+    display: none;
+
+    border: none;
+    background: none;
+
+    color: var(--tg-text-primary);
+    font-size: 26px;
+
+    cursor: pointer;
+}
+
+/* Dark overlay (enable in JS by toggling .active on an .overlay element) */
+/* .overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    opacity:0;
+    visibility:hidden;
+    transition:.25s;
+    z-index:900;
+}
+
+.overlay.active{
+    opacity:1;
+    visibility:visible;
+} */
+
+@media (max-width: 768px) {
+
+    /* --------------------------
+       NAVBAR
+    -------------------------- */
+
+    .hamburger {
+        display: block;
+    }
+
+    .profile_button,
+    .about_button {
+        display: none;
+    }
+
+    .nav_bar {
+        height: var(--tg-header-height-mobile);
+        padding: 0 12px;
+    }
+
+    #room_title {
+        font-size: 16px;
+        letter-spacing: 0.2px;
+    }
+
+    /* --------------------------
+       SIDEBAR
+    -------------------------- */
+
+    .container_left {
+        top: var(--tg-header-height-mobile);
+        bottom: 0;
+        left: -280px;
+        width: 280px;
+        z-index: 999;
+        transition: left 0.25s ease;
+    }
+
+    .container_left.active {
+        left: 0;
+    }
+
+    /* --------------------------
+       BOTTOM BUTTONS
+    -------------------------- */
+
+    .container_left_bottom {
+        left: -280px;
+        width: 280px;
+        transition: left 0.25s ease;
+        z-index: 1000;
+    }
+
+    .container_left_bottom.active {
+        left: 0;
+    }
+
+    /* --------------------------
+       CHAT AREA
+    -------------------------- */
+
+    .container_right {
+        left: 0;
+        top: var(--tg-header-height-mobile);
+        padding: 12px;
+        padding-bottom: 95px;
+    }
+
+    /* --------------------------
+       CHAT INPUT
+    -------------------------- */
+
+    .chat_input_area {
+        left: 0;
+    }
+
+    /* --------------------------
+       MESSAGES
+    -------------------------- */
+
+    .message {
+        max-width: 88%;
+    }
+
+    /* message options need to be reachable without hover on touch */
+    .message button {
+        opacity: 1;
+        background: rgba(0, 0, 0, 0.28);
+    }
+}
+
+/* =========================
+   Send Button
+========================= */
+.send {
+    flex-shrink: 0;
+
+    padding: 10px 22px;
+
+    border: none;
+    border-radius: 20px;
+
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    background: var(--tg-accent);
+
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.send:hover {
+    transform: translateY(-1px);
+    background: var(--tg-accent-dark);
+}
+
+.send:active {
+    transform: scale(0.96);
+}

@@ -166,13 +166,13 @@ button[onclick="check_credentials()"]:hover {
 }
 
 /* Register Button */
-button[onclick="reg_page()"] {
+button[onclick="register()"] {
     background: rgba(148, 163, 184, 0.1);
     border: 1px solid rgba(148, 163, 184, 0.22);
     color: #dbeafe;
 }
 
-button[onclick="reg_page()"]:hover {
+button[onclick="register()"]:hover {
     transform: translateY(-2px);
     background: rgba(71, 85, 105, 0.38);
     border-color: rgba(148, 163, 184, 0.42);

@@ -27,9 +27,23 @@ let menu_open = 0;
 let reply_edit_header_open = false;
 let replying = false;
 let reply_edit_chat_id = 0;
-let first_open = false;
+let first_open = true;
 
 
+
+function toggle_sidebar()
+{
+    document.querySelector(".container_left").classList.toggle("active");
+    document.querySelector(".container_left_bottom").classList.toggle("active");
+    document.querySelector(".overlay").classList.toggle("active");
+}
+
+function close_sidebar()
+{
+    document.querySelector(".container_left").classList.remove("active");
+    document.querySelector(".container_left_bottom").classList.remove("active");
+    document.querySelector(".overlay").classList.remove("active");
+}
 
 
 
@@ -120,9 +134,13 @@ const load_chats_URL = "/load_chats";
 // open chat
 async function open_chat()
 {
+    // remove sidebar
+    toggle_sidebar();
+    
     // local storage stores data in string 
     const room_string = localStorage.getItem('current_room');
     if(!room_string || room_string ==='null'){return;}
+    
     console.log("room_string =", room_string);
     console.log("typeof =", typeof room_string);
 
@@ -132,6 +150,7 @@ async function open_chat()
     // make required stuff visible! Like Leave button and send button, typing box!
     document.getElementById("leaveButton").style.display ="flex";
     document.getElementById("chat_input_area").style.display ="flex";
+    document.querySelector(".members_button").style.display ="flex";
 
     // start with removing the header initially!
     document.querySelector(".reply_edit_header").style.display ="none";
@@ -173,6 +192,13 @@ async function open_chat()
     // scroll up whenever room opened
     const chatArea = document.getElementById("chats");
     chatArea.scrollTop = chatArea.scrollHeight;
+
+
+    console.log("1");
+    // also reload the trending chatrooms every time you do this
+
+    await Trending_Rooms();
+    
 }
 open_chat();
 
@@ -184,6 +210,8 @@ async function leave_chat()
     document.getElementById("chat_input_area").style.display ="none";
     // remove leave button
     document.getElementById("leaveButton").style.display ="none";
+
+    document.querySelector(".members_button").style.display ="none";
     // remove room title
     document.getElementById("room_title").innerText ="";
 
@@ -198,8 +226,7 @@ async function leave_chat()
     }
 
 
-    // stop polling the chat
-    // stopPolling();
+
 
 
     // remove a member from chatroom members
@@ -218,6 +245,10 @@ async function leave_chat()
 
         // remove from local storage
         localStorage.removeItem("current_room");
+
+
+        // reload trending room
+        await Trending_Rooms();
 }
 
 
@@ -467,6 +498,86 @@ async function reply_chat(chat_id, room_id, message, sender)
 
 
 
+const load_members_URL = "/load_members";
+async function open_members()
+{
+    // Open the popup
+    document
+        .getElementById("members_overlay")
+        .classList.add("active");
+
+    // Find current room
+    const current_room_string = localStorage.getItem("current_room");
+    const current_room = JSON.parse(current_room_string);
+
+    try
+    {
+        const response = await fetch(load_members_URL,{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+                room_id:current_room.chatroom_id
+
+            })
+
+        });
+
+        const result = await response.json();
+
+        if(result.okay)
+        {
+            const members_list = document.querySelector(".members_list");
+
+            // Clear old members
+            members_list.innerHTML = "";
+
+            for(const member of result.members)
+            {
+                const card = document.createElement("div");
+                card.classList.add("member");
+
+                card.innerHTML = `
+                    <div class="member_avatar">
+                        ${member.member_name[0].toUpperCase()}
+                    </div>
+
+                    <div class="member_name">
+                        ${member.member_name}
+                    </div>
+
+                    <div class="member_status">
+                        🟢
+                    </div>
+                `;
+
+                members_list.appendChild(card);
+            }
+        }
+        else
+        {
+            console.log(result.message);
+        }
+    }
+    catch(err)
+    {
+        console.error(err);
+    }
+}
+
+
+
+function close_members()
+{
+    document
+        .getElementById("members_overlay")
+        .classList.remove("active");
+}
 
 
 
@@ -950,7 +1061,10 @@ async function send_chat()
     const trending_rooms_URL = "/trending_rooms";
     async function Trending_Rooms()
     {
+        
         const roomsArea = document.querySelector(".container_left");
+
+
         // Always clear before appending new stuff
         roomsArea.innerHTML="";
 
@@ -982,6 +1096,8 @@ async function send_chat()
 
                 for(const room of trending)
                 {
+                    console.log(room);
+
                     const new_room = document.createElement("button");
                     new_room.classList.add("room_card");
 
@@ -1020,7 +1136,7 @@ async function send_chat()
                         );
 
 
-                        let expanded = false;
+                    let expanded = false;
                     details_button.addEventListener("click", async function(event){
                         event.stopPropagation();
 
@@ -1076,7 +1192,12 @@ async function send_chat()
         }
 
     }
-    Trending_Rooms();
+
+    // dont do this if its the first open
+    if(!first_open){
+        Trending_Rooms();
+        first_open = false;
+    }
 
 
 
@@ -1101,3 +1222,11 @@ document.addEventListener("click", function(){
     });
 });
 
+document.getElementById("members_overlay").addEventListener("click", function(event){
+
+    if(event.target === this)
+    {
+        close_members();
+    }
+
+});

@@ -40,21 +40,27 @@ const config = {
 //this is basically a function
 // 1. Create a variable to hold our connection
 let pool;
-
+const initializeDatabase = require("./db_init");
 // 2. Create a function that handles the connection
 async function connectToDatabase() {
     try {
         // Try to connect and store it in our 'pool' variable
         pool = await sql.connect(config);
         console.log(' Connected to MSSQL Database');
+
+        await initializeDatabase(pool);
+
     } catch (err) {
         // If it fails, tell us exactly why
         console.error(' Database Connection Failed!', err.message);
     }
 }
 
+
 // 3. Call the function immediately
+
 connectToDatabase();
+
 
 // base get to get it started
 app.get("/", function(req, res){
@@ -71,7 +77,7 @@ app.post('/login', async function (req, res) {
         const result = await pool.request()
             .input('user', sql.NVarChar, user)
             .input('pwd', sql.NVarChar, pwd)
-            .query("SELECT * FROM users WHERE UserName = @user AND UserPass = @pwd");
+            .query("SELECT * FROM users WHERE UserName = @user AND password = @pwd");
 
         // Anyone can bypass your frontend and call your API directly. So double check!
         if (result.recordset.length > 0) {
@@ -90,7 +96,7 @@ app.post('/register', async function (req, res) {
         const result = await pool.request()
             .input('user', sql.NVarChar, user)
             .input('pwd', sql.NVarChar, pwd)
-            .query("INSERT INTO users (UserName, UserPass) VALUES (@user, @pwd)");
+            .query("INSERT INTO users (UserName, password) VALUES (@user, @pwd)");
 
         if (result.rowsAffected[0] > 0) {
             res.json({ okay: true, message: "User registered successfully!" });
@@ -1096,6 +1102,41 @@ app.get('/trending_rooms', async function (req, res){
             trending:result.recordset
         }
     );
+
+});
+
+app.post('/load_members', async function(req, res){
+
+    const{room_id} = req.body;
+
+    try{
+
+        const table_name = `Room_${room_id}_Members`;
+
+        const result = await pool.request()
+            .input("table_name", sql.NVarChar, table_name)
+            .query(`
+                DECLARE @SQL NVARCHAR(MAX);
+
+                SET @SQL = '
+                    SELECT member_name
+                    FROM ' + QUOTENAME(@table_name) + '
+                    ORDER BY member_name;
+                ';
+
+                EXEC sp_executesql @SQL;
+            `);
+
+        res.json({
+            okay:true,
+            members: result.recordset
+        })
+
+    }
+    catch(err)
+    {
+        console.log(err);
+    }
 
 });
 

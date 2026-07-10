@@ -1178,32 +1178,175 @@ body {
 /* =========================
    Mobile Layout
 ========================= */
-@media (max-width: 700px) {
-    .container_left {
-        width: 220px;
-    }
+/* ==========================================
+   MOBILE SIDEBAR
+========================================== */
 
-    .container_left_bottom {
-        width: 220px;
-    }
+.hamburger{
 
-    .container_right {
-        left: 220px;
-        padding: 20px;
-    }
+    display:none;
 
-    /* .typing_box {
-        left: 240px;
-        right: 18px;
-        bottom: 16px;
-    } */
+    border:none;
 
-    .hello_msg {
-        font-size: 1.15rem;
-        padding-left: 18px;
-    }
+    background:none;
+
+    color:white;
+
+    font-size:28px;
+
+    cursor:pointer;
+
 }
 
+/* Dark overlay */
+
+/* .overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transition:.25s;
+
+    z-index:900;
+
+}
+
+.overlay.active{
+
+    opacity:1;
+
+    visibility:visible;
+
+} */
+
+
+@media (max-width:768px){
+
+    /* --------------------------
+       NAVBAR
+    -------------------------- */
+
+    .hamburger{
+
+        display:block;
+
+    }
+
+    .profile_button,
+    .about_button{
+
+        display:none;
+
+    }
+
+    .nav_bar{
+
+        height:64px;
+
+        padding:0 14px;
+
+    }
+
+    #room_title{
+
+        font-size:18px;
+
+        letter-spacing:1px;
+
+    }
+
+    /* --------------------------
+       SIDEBAR
+    -------------------------- */
+
+    .container_left{
+
+        top:64px;
+
+        bottom:0;
+
+        left:-280px;
+
+        width:280px;
+
+        z-index:999;
+
+        transition:left .25s ease;
+
+    }
+
+    .container_left.active{
+
+        left:0;
+
+    }
+
+    /* --------------------------
+       BOTTOM BUTTONS
+    -------------------------- */
+
+    .container_left_bottom{
+
+        left:-280px;
+
+        width:280px;
+
+        transition:left .25s ease;
+
+        z-index:1000;
+
+    }
+
+    .container_left_bottom.active{
+
+        left:0;
+
+    }
+
+    /* --------------------------
+       CHAT AREA
+    -------------------------- */
+
+    .container_right{
+
+        left:0;
+
+        top:64px;
+
+        padding:12px;
+
+        padding-bottom:95px;
+
+    }
+
+    /* --------------------------
+       CHAT INPUT
+    -------------------------- */
+
+    .chat_input_area{
+
+        left:0;
+
+    }
+
+    /* --------------------------
+       MESSAGES
+    -------------------------- */
+
+    .message{
+
+        max-width:90%;
+
+    }
+
+}
 
 /* =========================
    Send Button

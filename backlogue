@@ -46,6 +46,9 @@ Its basically going to involve:
 
 
 
-21.Add a chatroom members button.
-22.Write a function in backend to create the base tables automatically if not existing.
-23. Perform tunneling.
+21.Add a chatroom members button.  --done
+22.Write a function in backend to create the base tables automatically if not existing.  --done
+23. Perform tunneling.  --done
+
+24. fix double room bug.  --done
+25. make registration page.  --done

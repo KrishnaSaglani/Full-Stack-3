@@ -3,19 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>KSChat</title>
-    <link rel="stylesheet" href="chat_style.css">
+    <link rel="stylesheet" href="chat_style2.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="/socket.io/socket.io.js"></script>
     <script src = "chat_script.js" defer></script>
 </head>
 
 <body>
 
+    <div class="overlay" onclick="close_sidebar()"></div>
+
+
     <div class="nav_bar">
 
     <div class="nav_left">
+            <button class="hamburger" onclick="toggle_sidebar()">
+            ☰
+            </button>
 
-        <button class="profile_button">Profile</button>
-        <button class="about_button">About</button>
+        <!-- <button class="profile_button">Profile</button>
+        <button class="about_button">About</button> -->
+        <button class="logout_button" onclick="logout()">Logout</button>
 
     </div>
 
@@ -24,7 +32,13 @@
     <div class="nav_right">
 
         <button id="leaveButton" onclick="leave_chat()">← Leave Chat</button>
-        <button class="logout_button" onclick="logout()">Logout</button>
+         <button class="members_button"
+        onclick="open_members()">
+            👥 Members
+        </button>
+        
+       
+        
 
     </div>
 
@@ -67,6 +81,33 @@
             
         </div>
 
+        <div class="members_modal_overlay" id="members_overlay">
+
+            <div class="members_modal">
+
+                <div class="members_modal_header">
+
+                    <span>👥 Room Members</span>
+
+                    <button class="members_close"
+                            onclick="close_members()">
+
+                        ✕
+
+                    </button>
+
+                </div>
+
+                <div class="members_list">
+
+                </div>
+
+                </div>
+
+        </div>
+
+
 </body>
+
 </html>
 

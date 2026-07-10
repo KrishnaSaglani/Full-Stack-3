@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>KSChat</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/login_screen/login_style.css">
-    <script src = "/login_screen/login_script.js"></script>
+    <link rel="stylesheet" href="reg_style.css">
+    <script src = "reg.js"></script>
 </head>
 
 <body>
@@ -15,10 +15,12 @@
         <div class = "credentials">
             <input type="text" id="Username" placeholder="username..">
             <input type="text" id="Password" placeholder="Password..">
-            <button class="login-button" onclick="check_credentials()">Login</button>
-            <button class="register-button" onclick="reg_page()">Register</button>
+            <input type="text" id="Confirm" placeholder="Confirm Password..">
+            <!-- <button class="login-button" onclick="check_credentials()">Login</button> -->
+            <button class="register-button" onclick="register()">Register</button>
             <p id="result" class="result"></p>
-        </div>
+
+            <a class="sign_in" href="../login_screen/login.html">Sign In</a>        </div>
     </div>
 </body>
 
