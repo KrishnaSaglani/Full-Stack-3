@@ -150,7 +150,7 @@ async function open_chat()
     // make required stuff visible! Like Leave button and send button, typing box!
     document.getElementById("leaveButton").style.display ="flex";
     document.getElementById("chat_input_area").style.display ="flex";
-    document.querySelector(".members_button").style.display ="flex";
+    document.querySelector(".members_button").style.display ="none";
 
     // start with removing the header initially!
     document.querySelector(".reply_edit_header").style.display ="none";

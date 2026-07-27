@@ -78,11 +78,8 @@ async function create_room(){
             alert("Default maximum members is set at 20.");
             max_members = 20;
         }
-        else if(!Number.isInteger(max_members))
-        {
-            alert("Maximum members must be an integer.");
-            return;
-        }
+
+        
         if(max_members <= 0)
         {
             alert("Maximum members must be greater than 0.");

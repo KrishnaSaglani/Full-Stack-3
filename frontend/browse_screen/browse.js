@@ -120,7 +120,7 @@ async function addChatrooms() {
 
 
                         try{
-                            delete_URL = API_URL + "/delete_chatroom";
+                            const delete_URL = "/delete_chatroom";
                             const response= await fetch (delete_URL, {
                                 method:'POST',
                                 headers:{
