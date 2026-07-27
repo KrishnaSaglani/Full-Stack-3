@@ -1,11 +1,279 @@
-1. To implement tunneling:
-    go to BASH. Load directory Desktop/Cloudfared
+# KSChat 💬
 
-    Then do :
-    ./cloudflared.exe tunnel --url http://localhost:3000.
+KSChat is a real-time full-stack chatroom application built using **Node.js**, **Express.js**, **Microsoft SQL Server**, and **Socket.IO**. It allows users to create and join public chatrooms, exchange messages in real time, reply to and edit messages, and manage chatroom membership through a modern web interface.
 
+---
 
-    Backend should be ON when you do this.
+## Features
 
-2. Starting backend:
-    just run index.js
+-  User Registration and Login
+-  Real-time messaging using Socket.IO
+-  Create and browse public chatrooms
+-  Join and leave chatrooms
+-  Edit messages
+-  Delete messages
+-  Reply to messages
+-  View room members
+-  Chatroom expiration based on configurable lifetime
+-  Automatic database initialization on first launch
+-  Public access using Cloudflare Tunnel (optional)
+
+---
+
+# Tech Stack
+
+## Frontend
+
+- HTML5
+- CSS3
+- Vanilla JavaScript
+
+---
+
+## Backend
+
+- Node.js
+- Express.js
+- Socket.IO
+
+---
+
+## Database
+
+- Microsoft SQL Server
+- mssql Node.js package
+
+---
+
+## Other Tools
+
+- Cloudflare Tunnel (for public hosting)
+- Git & GitHub
+
+---
+
+# Project Structure
+
+```
+KSChat/
+
+├── backend/
+│   ├── index.js
+│   ├── db_init.js
+│   ├── package.json
+│   └── ...
+│
+├── frontend/
+│   ├── login_screen/
+│   ├── register_screen/
+│   ├── browse_chatroom/
+│   ├── create_chatroom/
+│   ├── chat_screen/
+│   └── ...
+│
+└── README.md
+```
+
+---
+
+# Prerequisites
+
+Before running the project, ensure the following software is installed:
+
+- Node.js (v18 or later recommended)
+- Microsoft SQL Server
+- SQL Server Management Studio (optional)
+- Git
+
+---
+
+# Installation
+
+## 1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/KSChat.git
+
+cd KSChat/backend
+```
+
+---
+
+## 2. Install dependencies
+
+```bash
+npm install
+```
+
+---
+
+## 3. Configure SQL Server
+
+Open `index.js` and modify the SQL Server configuration according to your local installation.
+
+Example:
+
+```javascript
+const config = {
+
+    user: "your_username",
+
+    password: "your_password",
+
+    server: "localhost\\SQLEXPRESS",
+
+    database: "KSChat",
+
+    options: {
+
+        trustServerCertificate: true
+
+    }
+
+};
+```
+
+Create an empty database named:
+
+```
+KSChat
+```
+
+No tables need to be created manually.
+
+The application automatically creates the required tables when it starts.
+
+---
+
+## 4. Start the server
+
+```bash
+node index.js
+```
+
+or
+
+```bash
+nodemon index.js
+```
+
+You should see:
+
+```
+Connected to MSSQL Database
+
+Checking database...
+
+Database initialized successfully.
+
+Server running on port 3000
+```
+
+---
+
+## 5. Open the application
+
+Navigate to
+
+```
+http://localhost:3000
+```
+
+Register a new account and start chatting.
+
+---
+
+# Database Initialization
+
+On startup, KSChat automatically checks whether the required tables exist.
+
+If they are missing, they are created automatically.
+
+Current tables include:
+
+- Users
+- Chatrooms
+
+Each newly created chatroom also creates:
+
+```
+Room_<ChatroomID>
+
+Room_<ChatroomID>_Members
+```
+
+which store the chat history and member list respectively.
+
+---
+
+# Real-Time Communication
+
+KSChat uses Socket.IO for instant communication.
+
+Current real-time features include:
+
+- New messages
+- Edited messages
+- Deleted messages
+- Replies
+- Room join notifications
+- Room leave notifications
+
+---
+
+# Hosting
+
+During development the application can be exposed publicly using Cloudflare Tunnel.
+
+Example:
+
+```bash
+cloudflared tunnel --url http://localhost:3000
+```
+
+The generated URL allows anyone with the link to access the application while the server is running.
+
+---
+
+# Future Improvements
+
+- Image sharing
+- Emoji picker
+- Message search
+- Online user indicators
+- Typing indicator
+- Read receipts
+- Mobile responsive UI
+- User profiles
+- File sharing
+
+---
+
+# Screenshots
+
+Add screenshots of the following pages here:
+
+- Login Page
+- Registration Page
+- Browse Chatrooms
+- Chat Interface
+- Members Window
+
+---
+
+# Author
+
+**Krishna Saglani**
+
+B.Tech. Computer Science & Engineering
+
+IIT Jodhpur
+
+GitHub:
+https://github.com/KrishnaSaglani
+
+---
+
+# License
+
+This project is intended for educational purposes.
