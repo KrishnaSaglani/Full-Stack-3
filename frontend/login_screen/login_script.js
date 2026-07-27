@@ -1,6 +1,10 @@
 const API_URL = '/login';
 
 async function check_credentials() {
+
+    // precaution
+    localStorage.removeItem("current_room");
+
     // 1. Grab the values from the HTML inputs
     const username = document.getElementById('Username').value;
     const password = document.getElementById('Password').value;
@@ -110,6 +114,7 @@ async function check_credentials() {
 
 async function reg_page()
 {
+    localStorage.removeItem("current_room");
     window.location.href = "../reg_screen/reg.html";
 }
 

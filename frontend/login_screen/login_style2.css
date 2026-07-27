@@ -1,0 +1,227 @@
+/* =====================================================
+   TELEGRAM DESKTOP — THEME TOKENS & LOGIN / AUTH
+===================================================== */
+:root {
+    --tg-bg-primary:   #0e1621;   /* main chat canvas            */
+    --tg-bg-secondary: #17212b;   /* sidebar / header / composer */
+    --tg-bg-tertiary:  #1c2733;   /* hover states                */
+    --tg-bg-elevated:  #212d3b;   /* menus / dropdowns / cards   */
+    --tg-bg-input:     #101921;   /* text fields                 */
+
+    --tg-accent:        #2AABEE; /* Telegram brand blue          */
+    --tg-accent-dark:   #229ED9;
+    --tg-accent-active: #2b5278; /* selected chat / active state */
+    --tg-accent-hover:  #3a6a94;
+
+    --tg-text-primary:   #ffffff;
+    --tg-text-secondary: #8b98a5;
+    --tg-text-tertiary:  #6c7883;
+    --tg-text-muted:     #4a5560;
+
+    --tg-border:        rgba(255, 255, 255, 0.06);
+    --tg-border-strong: rgba(255, 255, 255, 0.12);
+
+    --tg-bubble-out:      #2b5f8a;
+    --tg-bubble-out-dark: #234b6e;
+    --tg-bubble-in:       #1c2733;
+
+    --tg-danger:  #e53935;
+    --tg-success: #4fae4e;
+    --tg-warning: #f0b90b;
+
+    --tg-radius-lg: 16px;
+    --tg-radius-md: 12px;
+    --tg-radius-sm: 8px;
+
+    --tg-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+    --tg-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.3);
+
+    --tg-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                Helvetica, Arial, sans-serif;
+}
+
+/* =========================
+   1. Basic Reset & Body
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--tg-font);
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: var(--tg-text-primary);
+    font-size: 14px;
+
+    background:
+        radial-gradient(circle at 20% 15%, rgba(42, 171, 238, 0.05), transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(43, 82, 120, 0.08), transparent 45%),
+        var(--tg-bg-primary);
+}
+
+/* =========================
+   2. Login Card
+========================= */
+.container {
+    width: 100%;
+    max-width: 400px;
+    padding: 2.2rem;
+
+    text-align: center;
+    border-radius: var(--tg-radius-lg);
+
+    background: var(--tg-bg-secondary);
+    border: 1px solid var(--tg-border-strong);
+    box-shadow: var(--tg-shadow-md);
+
+    animation: cardAppear 0.22s ease-out;
+}
+
+@keyframes cardAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+h1 {
+    margin-bottom: 1.6rem;
+    color: var(--tg-text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+/* =========================
+   3. Inputs & Credentials
+========================= */
+.credentials {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+input {
+    width: 100%;
+    padding: 11px 16px;
+
+    color: var(--tg-text-primary);
+    font-size: 0.92rem;
+
+    background: var(--tg-bg-input);
+    border: 1px solid var(--tg-border-strong);
+    border-radius: var(--tg-radius-sm);
+
+    outline: none;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+input::placeholder {
+    color: var(--tg-text-tertiary);
+}
+
+input:focus {
+    border-color: var(--tg-accent);
+    background: var(--tg-bg-input);
+    box-shadow: 0 0 0 2px rgba(42, 171, 238, 0.15);
+}
+
+/* =========================
+   4. Buttons
+========================= */
+button {
+    width: 100%;
+    padding: 11px;
+
+    border: none;
+    border-radius: var(--tg-radius-sm);
+
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+/* Login Button (Primary Accent) */
+button[onclick="check_credentials()"] {
+    background: var(--tg-accent);
+    box-shadow: none;
+}
+
+button[onclick="check_credentials()"]:hover {
+    transform: translateY(-1px);
+    background: var(--tg-accent-dark);
+    box-shadow: var(--tg-shadow-sm);
+}
+
+/* Register Button (Secondary Outlined) */
+button[onclick="reg_page()"] {
+    background: transparent;
+    border: 1px solid var(--tg-border-strong);
+    color: var(--tg-text-secondary);
+    box-shadow: none;
+}
+
+button[onclick="reg_page()"]:hover {
+    transform: none;
+    background: var(--tg-bg-tertiary);
+    color: var(--tg-text-primary);
+}
+
+/* Proceed button created via JS (Success Action) */
+.proceed_button {
+    width: 100%;
+    margin-top: 10px;
+
+    background: var(--tg-success) !important;
+    border: none !important;
+    color: #ffffff !important;
+}
+
+.proceed_button:hover {
+    transform: translateY(-1px);
+    background: #5cc25b !important;
+}
+
+/* Click effect */
+button:active {
+    transform: scale(0.98);
+}
+
+/* =========================
+   5. Result Message
+========================= */
+.result {
+    min-height: 1.2rem;
+    margin-top: 1rem;
+
+    color: var(--tg-text-secondary);
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+/* =========================
+   6. Mobile Responsiveness
+========================= */
+@media (max-width: 480px) {
+    .container {
+        width: 90%;
+        padding: 1.8rem 1.4rem;
+    }
+
+    h1 {
+        font-size: 1.35rem;
+    }
+}
