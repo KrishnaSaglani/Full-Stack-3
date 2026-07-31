@@ -1168,12 +1168,8 @@ const PORT = process.env.PORT || 3000;
 // Think of environment variables as little notes 
 // Azure gives your app when it starts.
 
-// app.listen(PORT, () => {
-//     console.log(`Server live at http://localhost:${PORT}`);
-// });
-
 // now socket.io server listens at port 3000
-server.listen(3000,function(){
+server.listen(PORT,function(){
 
     console.log("Server live at http://localhost:3000");
 
