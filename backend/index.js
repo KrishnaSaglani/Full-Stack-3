@@ -18,7 +18,7 @@ require("dotenv").config();
 
 // connecting frontend and backend:
 const path = require("path");
-app.use(express.static(path.join(__dirname, "../frontend")));
+app.use(express.static(path.join(__dirname, "frontend")));
 
 
 // Now creating server itself:
