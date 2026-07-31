@@ -4,11 +4,17 @@ const express = require('express');
 const http = require("http");
 
 
-const sql = require('mssql/msnodesqlv8');
+const sql = require('mssql');
 const cors = require('cors');
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+
+require("dotenv").config();
+// .env contains all data related to connecting to database
+// enviornment variables determined which enviornment your server connects to
+// Azure or local or something else
 
 // connecting frontend and backend:
 const path = require("path");
@@ -30,9 +36,27 @@ const io = new Server(server,{
 
 
 
-
+//connecting to azure db!
 const config = {
-    connectionString: 'Driver={ODBC Driver 17 for SQL Server};Server=localhost\\SQLEXPRESS01;Database=KSChat;Trusted_Connection=yes;',
+
+    user: process.env.DB_USER,
+
+    password: process.env.DB_PASSWORD,
+
+    server: process.env.DB_SERVER,
+
+    database: process.env.DB_DATABASE,
+
+    options: {
+
+        encrypt: true,
+        // Your data is sent through an encrypted TLS connection instead of plain text.
+
+        trustServerCertificate: false
+        //Since Azure uses a valid certificate, this should remain false.
+
+    }
+
 };
 
 // PRE-CONNECT: Create a connection pool globally
@@ -1140,7 +1164,10 @@ app.post('/load_members', async function(req, res){
 
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+// Think of environment variables as little notes 
+// Azure gives your app when it starts.
+
 // app.listen(PORT, () => {
 //     console.log(`Server live at http://localhost:${PORT}`);
 // });
